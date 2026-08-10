@@ -7,21 +7,89 @@ from typing import Any
 
 @dataclass
 class Usage:
-    extra_tokens: int = 0
+    """Additional collaboration usage.
+
+    Hard budgets constrain ``extra_completion_tokens`` and ``extra_calls``.
+    The legacy ``extra_tokens`` name meant completion tokens; it remains a
+    read/property alias but is not emitted by v2 serialization.
+    """
+
+    extra_prompt_tokens: int = 0
+    extra_completion_tokens: int = 0
+    extra_total_tokens: int = 0
     extra_calls: int = 0
 
-    def add(self, tokens: int, calls: int = 1) -> None:
-        if tokens < 0 or calls < 0:
+    def __post_init__(self) -> None:
+        values = (
+            self.extra_prompt_tokens,
+            self.extra_completion_tokens,
+            self.extra_total_tokens,
+            self.extra_calls,
+        )
+        if any(
+            isinstance(value, bool) or not isinstance(value, int) or value < 0
+            for value in values
+        ):
+            raise ValueError("Usage values must be non-negative integers")
+        if self.extra_total_tokens != self.extra_prompt_tokens + self.extra_completion_tokens:
+            raise ValueError("Usage total tokens must equal prompt tokens plus completion tokens")
+
+    @property
+    def extra_tokens(self) -> int:
+        """Legacy alias: historically this field represented completion tokens."""
+        return self.extra_completion_tokens
+
+    def add(
+        self,
+        completion_tokens: int,
+        calls: int = 1,
+        *,
+        prompt_tokens: int = 0,
+        total_tokens: int | None = None,
+    ) -> None:
+        if total_tokens is None:
+            total_tokens = prompt_tokens + completion_tokens
+        values = (prompt_tokens, completion_tokens, total_tokens, calls)
+        if any(
+            isinstance(value, bool) or not isinstance(value, int) or value < 0
+            for value in values
+        ):
             raise ValueError("Usage increments must be non-negative")
-        self.extra_tokens += int(tokens)
-        self.extra_calls += int(calls)
+        if total_tokens != prompt_tokens + completion_tokens:
+            raise ValueError("Usage total tokens must equal prompt tokens plus completion tokens")
+        self.extra_prompt_tokens += prompt_tokens
+        self.extra_completion_tokens += completion_tokens
+        self.extra_total_tokens += total_tokens
+        self.extra_calls += calls
 
     def to_dict(self) -> dict[str, int]:
         return asdict(self)
 
     @classmethod
     def from_dict(cls, payload: dict[str, Any]) -> "Usage":
-        return cls(int(payload.get("extra_tokens", 0)), int(payload.get("extra_calls", 0)))
+        if not isinstance(payload, dict):
+            raise ValueError("Usage payload must be an object")
+        completion = payload.get(
+            "extra_completion_tokens",
+            payload.get("extra_tokens", 0),
+        )
+        if (
+            "extra_completion_tokens" in payload
+            and "extra_tokens" in payload
+            and payload["extra_completion_tokens"] != payload["extra_tokens"]
+        ):
+            raise ValueError(
+                "Conflicting extra_completion_tokens and legacy extra_tokens values"
+            )
+        prompt = payload.get("extra_prompt_tokens", 0)
+        total = payload.get("extra_total_tokens", prompt + completion)
+        calls = payload.get("extra_calls", 0)
+        return cls(
+            extra_prompt_tokens=prompt,
+            extra_completion_tokens=completion,
+            extra_total_tokens=total,
+            extra_calls=calls,
+        )
 
 
 @dataclass

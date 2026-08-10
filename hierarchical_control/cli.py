@@ -237,7 +237,10 @@ def command_smoke(args: argparse.Namespace) -> dict[str, Any]:
         for candidate in rollout["candidates"]:
             limit = config.tier(candidate["tier"])
             cost = candidate["actual_cost"]
-            if cost["extra_tokens"] > limit.extra_tokens or cost["extra_calls"] > limit.extra_calls:
+            if (
+                cost["extra_completion_tokens"] > limit.extra_tokens
+                or cost["extra_calls"] > limit.extra_calls
+            ):
                 raise AssertionError("A budget rollout exceeded its allocation")
 
     action_backend = MockBackend()
@@ -287,7 +290,7 @@ def command_smoke(args: argparse.Namespace) -> dict[str, Any]:
     allocated = graph_result["allocated_budget"]
     if (
         not final_state.terminated
-        or final_state.usage.extra_tokens > allocated.extra_tokens
+        or final_state.usage.extra_completion_tokens > allocated.extra_tokens
         or final_state.usage.extra_calls > allocated.extra_calls
     ):
         raise AssertionError("LangGraph runtime failed its termination or budget invariant")

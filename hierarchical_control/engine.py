@@ -4,7 +4,7 @@ from dataclasses import dataclass
 
 from .backend import LLMBackend
 from .config import ACTION_LABELS, Action, BudgetLimit, ExperimentConfig
-from .types import AgentState
+from .types import AgentState, CompletionResult
 
 
 @dataclass
@@ -12,12 +12,48 @@ class CollaborationEngine:
     backend: LLMBackend
     config: ExperimentConfig
 
+    @staticmethod
+    def _validated_usage(
+        completion: CompletionResult,
+        purpose: str,
+    ) -> tuple[int, int, int]:
+        if (
+            not completion.usage_reported
+            or completion.prompt_tokens is None
+            or completion.total_tokens is None
+        ):
+            raise RuntimeError(
+                f"Backend did not report real prompt/completion/total token usage for {purpose}; "
+                "usage estimation is forbidden"
+            )
+        values = (
+            completion.prompt_tokens,
+            completion.completion_tokens,
+            completion.total_tokens,
+        )
+        if any(
+            isinstance(value, bool) or not isinstance(value, int) or value < 0
+            for value in values
+        ):
+            raise RuntimeError(f"Backend reported invalid token usage for {purpose}")
+        prompt_tokens, completion_tokens, total_tokens = values
+        if total_tokens != prompt_tokens + completion_tokens:
+            raise RuntimeError(
+                f"Backend reported inconsistent token usage for {purpose}: "
+                f"total_tokens={total_tokens}, prompt_tokens={prompt_tokens}, "
+                f"completion_tokens={completion_tokens}"
+            )
+        return prompt_tokens, completion_tokens, total_tokens
+
     def solve_once(self, query: str, metadata: dict | None = None) -> AgentState:
         messages = [
             {"role": "system", "content": "You are the frozen Solver. Produce the best direct answer."},
             {"role": "user", "content": query},
         ]
         result = self.backend.complete(messages, self.config.solver_max_tokens, "solver")
+        # The Solver is outside the additional collaboration budget, but a real
+        # backend must still provide internally consistent usage.
+        self._validated_usage(result, "solver")
         history = messages + [{"role": "assistant", "name": "solver", "content": result.content}]
         # Solver usage is intentionally excluded from additional collaboration usage.
         return AgentState(
@@ -30,7 +66,7 @@ class CollaborationEngine:
     @staticmethod
     def remaining(state: AgentState, budget: BudgetLimit) -> BudgetLimit:
         return BudgetLimit(
-            max(0, budget.extra_tokens - state.usage.extra_tokens),
+            max(0, budget.extra_tokens - state.usage.extra_completion_tokens),
             max(0, budget.extra_calls - state.usage.extra_calls),
         )
 
@@ -84,12 +120,23 @@ class CollaborationEngine:
         else:
             raise ValueError(f"Unknown role: {role}")
         completion = self.backend.complete(messages, cap, role)
-        if completion.completion_tokens > cap:
+        prompt_tokens, completion_tokens, total_tokens = self._validated_usage(
+            completion, role
+        )
+        if completion_tokens > cap:
             raise RuntimeError(
-                f"Backend reported {completion.completion_tokens} completion tokens above cap {cap}"
+                f"Backend reported {completion_tokens} completion tokens above cap {cap}"
             )
-        result_state.usage.add(completion.completion_tokens, 1)
-        if result_state.usage.extra_tokens > budget.extra_tokens or result_state.usage.extra_calls > budget.extra_calls:
+        result_state.usage.add(
+            completion_tokens,
+            1,
+            prompt_tokens=prompt_tokens,
+            total_tokens=total_tokens,
+        )
+        if (
+            result_state.usage.extra_completion_tokens > budget.extra_tokens
+            or result_state.usage.extra_calls > budget.extra_calls
+        ):
             raise RuntimeError("Budget invariant violated after backend call")
         result_state.history.append({"role": "assistant", "name": role, "content": completion.content})
         if role == "refiner":

@@ -131,7 +131,12 @@ def train_action_controller(
         [
             [
                 float(record["target_quality"]),
-                float(record["target_future_tokens"]) / token_denominator,
+                float(
+                    record["target_future_total_tokens"]
+                    if "target_future_total_tokens" in record
+                    else record["target_future_tokens"]
+                )
+                / token_denominator,
                 float(record["target_future_calls"]) / call_denominator,
             ]
             for record in records

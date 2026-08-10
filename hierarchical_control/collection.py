@@ -16,6 +16,12 @@ TIER_REFERENCE_ACTION = {
     BudgetTier.HIGH.value: Action.FULL.value,
 }
 
+COST_SEMANTICS_V2 = {
+    "budget_semantics_version": 2,
+    "hard_budget": "completion_tokens+calls",
+    "optimization_cost": "total_tokens+calls",
+}
+
 
 @dataclass
 class BudgetCollectionResult:
@@ -94,6 +100,7 @@ def collect_budget_labels(
         if not unsolved:
             solved_count += 1
         rollout = {
+            **COST_SEMANTICS_V2,
             "id": _example_id(example, index),
             "query": query,
             "max_budget": max_budget.to_dict(),
@@ -107,6 +114,7 @@ def collect_budget_labels(
         if not unsolved or include_unsolved:
             training.append(
                 {
+                    **COST_SEMANTICS_V2,
                     "id": rollout["id"],
                     "query": query,
                     "max_budget": max_budget.to_dict(),
@@ -137,9 +145,42 @@ class ActionCollectionResult:
 
 def _future_cost(start: AgentState, final: AgentState) -> dict[str, int]:
     return {
-        "extra_tokens": final.usage.extra_tokens - start.usage.extra_tokens,
+        "extra_prompt_tokens": (
+            final.usage.extra_prompt_tokens - start.usage.extra_prompt_tokens
+        ),
+        "extra_completion_tokens": (
+            final.usage.extra_completion_tokens
+            - start.usage.extra_completion_tokens
+        ),
+        "extra_total_tokens": (
+            final.usage.extra_total_tokens - start.usage.extra_total_tokens
+        ),
         "extra_calls": final.usage.extra_calls - start.usage.extra_calls,
     }
+
+
+def _cost_completion_tokens(cost: dict[str, Any]) -> int:
+    """Read v2 completion cost or the legacy extra_tokens completion field."""
+    value = cost.get("extra_completion_tokens", cost.get("extra_tokens"))
+    if isinstance(value, bool) or not isinstance(value, int) or value < 0:
+        raise ValueError("Future cost is missing non-negative completion tokens")
+    return value
+
+
+def _cost_total_tokens(cost: dict[str, Any]) -> int:
+    completion = _cost_completion_tokens(cost)
+    prompt = cost.get("extra_prompt_tokens", 0)
+    total = cost.get("extra_total_tokens", prompt + completion)
+    if any(
+        isinstance(value, bool) or not isinstance(value, int) or value < 0
+        for value in (prompt, total)
+    ):
+        raise ValueError("Future cost has invalid prompt or total tokens")
+    if total != prompt + completion:
+        raise ValueError(
+            "Future cost total tokens must equal prompt tokens plus completion tokens"
+        )
+    return total
 
 
 def collect_counterfactual_outcomes(
@@ -184,7 +225,10 @@ def select_action_label(
         cost = outcome["future_cost"]
         if not action_mask.get(outcome["action"], False):
             continue
-        if cost["extra_tokens"] > remaining.extra_tokens or cost["extra_calls"] > remaining.extra_calls:
+        if (
+            _cost_completion_tokens(cost) > remaining.extra_tokens
+            or cost["extra_calls"] > remaining.extra_calls
+        ):
             continue
         feasible.append(outcome)
     if not feasible:
@@ -197,7 +241,7 @@ def select_action_label(
         quality_tied,
         key=lambda item: (
             item["future_cost"]["extra_calls"] * call_cost_weight
-            + item["future_cost"]["extra_tokens"],
+            + _cost_total_tokens(item["future_cost"]),
             ACTION_LABELS.index(item["action"]),
         ),
     )
@@ -222,6 +266,7 @@ def collect_action_labels(
             outcomes = collect_counterfactual_outcomes(snapshot, example, engine, evaluator)
             state_id = f"{_example_id(example, index)}:{trajectory_step}"
             rollout = {
+                **COST_SEMANTICS_V2,
                 "state_id": state_id,
                 "query_id": _example_id(example, index),
                 "state": snapshot.to_dict(),
@@ -236,7 +281,7 @@ def collect_action_labels(
             for tier in BUDGET_LABELS:
                 allocated = engine.config.tier(tier)
                 if (
-                    snapshot.usage.extra_tokens > allocated.extra_tokens
+                    snapshot.usage.extra_completion_tokens > allocated.extra_tokens
                     or snapshot.usage.extra_calls > allocated.extra_calls
                 ):
                     continue
@@ -251,6 +296,7 @@ def collect_action_labels(
                 )
                 training.append(
                     {
+                        **COST_SEMANTICS_V2,
                         "state_id": state_id,
                         "query": query,
                         "state": snapshot.to_dict(),
@@ -260,7 +306,15 @@ def collect_action_labels(
                         "action_mask": mask,
                         "action_label": selected["action"],
                         "target_quality": selected["quality"],
-                        "target_future_tokens": selected["future_cost"]["extra_tokens"],
+                        "target_future_prompt_tokens": selected["future_cost"][
+                            "extra_prompt_tokens"
+                        ],
+                        "target_future_completion_tokens": selected["future_cost"][
+                            "extra_completion_tokens"
+                        ],
+                        "target_future_total_tokens": selected["future_cost"][
+                            "extra_total_tokens"
+                        ],
                         "target_future_calls": selected["future_cost"]["extra_calls"],
                         "mock_only": rollout["mock_only"],
                     }

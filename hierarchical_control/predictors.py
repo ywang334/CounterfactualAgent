@@ -62,7 +62,10 @@ class ActionModelPredictor:
         self, state: AgentState, allocated: BudgetLimit, action_mask: dict[str, bool]
     ) -> str:
         remaining = BudgetLimit(
-            max(0, allocated.extra_tokens - state.usage.extra_tokens),
+            max(
+                0,
+                allocated.extra_tokens - state.usage.extra_completion_tokens,
+            ),
             max(0, allocated.extra_calls - state.usage.extra_calls),
         )
         query_embedding = self.encoder.encode([state.query])

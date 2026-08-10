@@ -91,7 +91,7 @@ def action_numeric_features(
         allocated.extra_calls / call_denominator,
         remaining.extra_tokens / token_denominator,
         remaining.extra_calls / call_denominator,
-        state.usage.extra_tokens / token_denominator,
+        state.usage.extra_completion_tokens / token_denominator,
         state.usage.extra_calls / call_denominator,
         state.round_index / max(config.max_collaboration_steps / 2.0, 1.0),
         state.collaboration_steps / max(float(config.max_collaboration_steps), 1.0),

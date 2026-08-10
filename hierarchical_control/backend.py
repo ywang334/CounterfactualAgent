@@ -62,7 +62,20 @@ class MockBackend:
             content = f"MOCK_ANSWER id={digest} quality={quality}"
         else:
             content = f"MOCK_OUTPUT id={digest} quality=0"
-        return CompletionResult(content=content, completion_tokens=max_tokens)
+        prompt_tokens = max(
+            1,
+            sum(
+                max(1, len(message.get("content", "").encode("utf-8")) // 4)
+                for message in messages
+            ),
+        )
+        return CompletionResult(
+            content=content,
+            completion_tokens=max_tokens,
+            prompt_tokens=prompt_tokens,
+            total_tokens=prompt_tokens + max_tokens,
+            usage_reported=True,
+        )
 
 
 def _extract_quality(text: str) -> int:
@@ -115,16 +128,25 @@ class OpenAIBackend:
         completion_tokens = getattr(usage, "completion_tokens", None)
         prompt_tokens = getattr(usage, "prompt_tokens", None)
         total_tokens = getattr(usage, "total_tokens", None)
-        usage_reported = completion_tokens is not None and prompt_tokens is not None
-        if completion_tokens is None:
-            # Only a fallback for non-conforming OpenAI-compatible servers.
-            completion_tokens = max(1, len(content.encode("utf-8")) // 4)
-        if usage_reported and total_tokens is None:
-            total_tokens = int(prompt_tokens) + int(completion_tokens)
+        if completion_tokens is None or prompt_tokens is None or total_tokens is None:
+            raise RuntimeError(
+                "OpenAI-compatible backend omitted prompt/completion/total token usage; "
+                "usage estimation is forbidden"
+            )
+        if any(
+            isinstance(value, bool) or not isinstance(value, int) or value < 0
+            for value in (prompt_tokens, completion_tokens, total_tokens)
+        ):
+            raise RuntimeError("OpenAI-compatible backend returned invalid token usage")
+        if total_tokens != prompt_tokens + completion_tokens:
+            raise RuntimeError(
+                "OpenAI-compatible backend returned inconsistent token usage: "
+                "total_tokens must equal prompt_tokens + completion_tokens"
+            )
         return CompletionResult(
             content=content,
-            completion_tokens=int(completion_tokens),
-            prompt_tokens=int(prompt_tokens) if prompt_tokens is not None else None,
-            total_tokens=int(total_tokens) if total_tokens is not None else None,
-            usage_reported=usage_reported,
+            completion_tokens=completion_tokens,
+            prompt_tokens=prompt_tokens,
+            total_tokens=total_tokens,
+            usage_reported=True,
         )

@@ -14,11 +14,12 @@ START -> budget_allocator -> solver -> action_controller
 - Solver 每个 query 只运行一次，且不计入额外协作预算。
 - 协作预算同时限制额外 completion tokens 和额外 LLM 调用次数。
 - `SHORT/MEDIUM/FULL` 默认上限为 64/192/512。动作只有在完整上限及一次调用均可容纳时才会通过 mask；backend 返回的实际 completion tokens 用于记账。
+- 成本记账 v2 将额外用量拆为 `extra_prompt_tokens`、`extra_completion_tokens`、`extra_total_tokens` 和 `extra_calls`，并强制 `total=prompt+completion`。请求前的硬预算与 action mask 只使用 completion tokens 和 calls；请求后质量并列的动作按 total tokens 和 calls 比较成本。旧 JSON 中的 `extra_tokens` 原本表示 completion tokens，读取时仍兼容，但 v2 rollout 不再写出这个歧义字段。
 - `SKIP` 只推进角色，`STOP` 立即结束；二者都不调用模型。
 - 默认档位是 `ZERO=(0,0)`、`LOW=(128,2)`、`MEDIUM=(384,2)`、`HIGH=(1024,2)`，可在 [configs/default.json](configs/default.json) 修改。
 - 所有反事实分支都从 `deepcopy` 的同一状态开始，在统一的大采集上限下执行；部署预算只在生成训练标签时绑定。
 
-预算标签对同一 Solver 状态运行四个静态工作流，在样本 `max_budget` 上限内选择达到该 query 观测最佳质量的最低档位；所有可用档位都失败的样本记为 `unsolved`，默认不写入预算训练集。四档 rollout 仍全部保留以便离线重绑预算。动作标签在每个参考轨迹状态强制运行五个动作，再按每个部署预算筛选可行分支，先最大化终局质量，质量相同时最小化未来调用与 token 成本。
+预算标签对同一 Solver 状态运行四个静态工作流，在样本 `max_budget` 上限内选择达到该 query 观测最佳质量的最低档位；所有可用档位都失败的样本记为 `unsolved`，默认不写入预算训练集。四档 rollout 仍全部保留以便离线重绑预算。动作标签在每个参考轨迹状态强制运行五个动作，再按每个部署预算筛选可行分支，先最大化终局质量，质量相同时最小化未来 total-token 与调用成本。v2 rollout 显式写入 `budget_semantics_version=2`、`hard_budget=completion_tokens+calls` 和 `optimization_cost=total_tokens+calls`。
 
 ## 环境
 
