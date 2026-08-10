@@ -34,6 +34,7 @@ from .precritic_collection import (
 )
 from .precritic_controller_v1 import train_precritic_controller_v1
 from .precritic_controller_v1_audit import run_precritic_controller_v1_audit
+from .precritic_controller_v2 import train_precritic_controller_v2
 from .precritic_training_protocol import prepare_precritic_training_protocol
 from .prompt_stability_audit import run_prompt_stability_audit
 from .predictors import ActionModelPredictor, BudgetModelPredictor
@@ -287,6 +288,22 @@ def command_audit_precritic_controller_v1(
         old_probe_summary_path=args.old_probe_summary,
         final_test_manifest_path=args.final_test_manifest,
         run_metadata_prefix=args.run_metadata_prefix,
+        output_dir=args.output_dir,
+    )
+
+
+def command_train_precritic_controller_v2(
+    args: argparse.Namespace,
+) -> dict[str, Any]:
+    return train_precritic_controller_v2(
+        training_path=args.training,
+        training_manifest_path=args.training_manifest,
+        validation_path=args.validation,
+        validation_summary_path=args.validation_summary,
+        old_probe_predictions_path=args.old_probe,
+        old_probe_summary_path=args.old_probe_summary,
+        controller_v1_dir=args.controller_v1_dir,
+        final_test_manifest_path=args.final_test_manifest,
         output_dir=args.output_dir,
     )
 
@@ -742,6 +759,47 @@ def build_parser() -> argparse.ArgumentParser:
     controller_v1_audit.set_defaults(
         handler=command_audit_precritic_controller_v1
     )
+
+    controller_v2 = subparsers.add_parser(
+        "train-precritic-controller-v2"
+    )
+    controller_v2.add_argument(
+        "--training",
+        default="artifacts/precritic_training_1000/training_examples.jsonl",
+    )
+    controller_v2.add_argument(
+        "--training-manifest",
+        default="artifacts/precritic_training_1000/manifest.json",
+    )
+    controller_v2.add_argument(
+        "--validation",
+        default="artifacts/logiqa_policy_validation_100/predictions.jsonl",
+    )
+    controller_v2.add_argument(
+        "--validation-summary",
+        default="artifacts/logiqa_policy_validation_100/summary.json",
+    )
+    controller_v2.add_argument(
+        "--old-probe",
+        default="artifacts/precritic_gate_probe/predictions.jsonl",
+    )
+    controller_v2.add_argument(
+        "--old-probe-summary",
+        default="artifacts/precritic_gate_probe/summary.json",
+    )
+    controller_v2.add_argument(
+        "--controller-v1-dir",
+        default="artifacts/precritic_controller_v1",
+    )
+    controller_v2.add_argument(
+        "--final-test-manifest",
+        default="artifacts/logiqa_final_test_500/split_manifest.json",
+    )
+    controller_v2.add_argument(
+        "--output-dir",
+        default="artifacts/precritic_controller_v2_factorized",
+    )
+    controller_v2.set_defaults(handler=command_train_precritic_controller_v2)
 
     validation = subparsers.add_parser("validate-logiqa-policies")
     validation.add_argument(
