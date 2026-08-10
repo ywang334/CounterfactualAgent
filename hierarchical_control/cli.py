@@ -16,6 +16,10 @@ from .graph import build_workflow
 from .io_utils import read_jsonl, update_metrics, write_jsonl
 from .logiqa_audit import run_logiqa_audit
 from .logiqa_pilot import run_logiqa_pilot
+from .logiqa_policy_validation import (
+    load_validation_settings,
+    run_logiqa_policy_validation,
+)
 from .logiqa_prompts import MINIMAL_V1, PROMPT_VERSIONS
 from .logiqa_replay import load_logiqa_replay_settings, run_logiqa_prompt_replay
 from .prompt_stability_audit import run_prompt_stability_audit
@@ -179,6 +183,24 @@ def command_audit_prompt_stability(args: argparse.Namespace) -> dict[str, Any]:
         minimal_predictions=args.minimal_predictions,
         structured_predictions=args.structured_predictions,
         output_dir=args.output_dir,
+    )
+
+
+def command_validate_logiqa_policies(args: argparse.Namespace) -> dict[str, Any]:
+    settings = load_validation_settings(args.pilot_predictions)
+    api_key = args.api_key or os.environ.get("OPENAI_API_KEY") or "local"
+    backend = OpenAIBackend(
+        base_url=settings.base_url,
+        api_key=api_key,
+        model=settings.model,
+        temperature=settings.temperature,
+        timeout=args.timeout,
+        extra_body=settings.extra_body,
+    )
+    return run_logiqa_policy_validation(
+        pilot_predictions=args.pilot_predictions,
+        output_dir=args.output_dir,
+        backend=backend,
     )
 
 
@@ -418,6 +440,19 @@ def build_parser() -> argparse.ArgumentParser:
         default="artifacts/pilot_logiqa/prompt_stability_audit",
     )
     stability.set_defaults(handler=command_audit_prompt_stability)
+
+    validation = subparsers.add_parser("validate-logiqa-policies")
+    validation.add_argument(
+        "--pilot-predictions",
+        default="artifacts/pilot_logiqa/predictions.jsonl",
+    )
+    validation.add_argument(
+        "--output-dir",
+        default="artifacts/logiqa_policy_validation_100",
+    )
+    validation.add_argument("--api-key")
+    validation.add_argument("--timeout", type=float, default=120.0)
+    validation.set_defaults(handler=command_validate_logiqa_policies)
     return parser
 
 
