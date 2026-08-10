@@ -16,6 +16,8 @@ from .graph import build_workflow
 from .io_utils import read_jsonl, update_metrics, write_jsonl
 from .logiqa_audit import run_logiqa_audit
 from .logiqa_pilot import run_logiqa_pilot
+from .logiqa_prompts import MINIMAL_V1, PROMPT_VERSIONS
+from .logiqa_replay import load_logiqa_replay_settings, run_logiqa_prompt_replay
 from .predictors import ActionModelPredictor, BudgetModelPredictor
 from .training import train_action_controller, train_budget_allocator
 
@@ -150,6 +152,25 @@ def command_pilot_logiqa(args: argparse.Namespace) -> dict[str, Any]:
 
 def command_audit_logiqa_pilot(args: argparse.Namespace) -> dict[str, Any]:
     return run_logiqa_audit(args.predictions, args.output_dir)
+
+
+def command_replay_logiqa_prompts(args: argparse.Namespace) -> dict[str, Any]:
+    settings = load_logiqa_replay_settings(args.predictions)
+    api_key = args.api_key or os.environ.get("OPENAI_API_KEY") or "local"
+    backend = OpenAIBackend(
+        base_url=settings.base_url,
+        api_key=api_key,
+        model=settings.model,
+        temperature=settings.temperature,
+        timeout=args.timeout,
+        extra_body=settings.extra_body,
+    )
+    return run_logiqa_prompt_replay(
+        predictions_path=args.predictions,
+        prompt_version=args.prompt_version,
+        output_dir=args.output_dir,
+        backend=backend,
+    )
 
 
 def _toy_examples() -> list[dict[str, Any]]:
@@ -359,6 +380,14 @@ def build_parser() -> argparse.ArgumentParser:
     audit.add_argument("--predictions", "--input", dest="predictions", required=True)
     audit.add_argument("--output-dir", required=True)
     audit.set_defaults(handler=command_audit_logiqa_pilot)
+
+    replay = subparsers.add_parser("replay-logiqa-prompts")
+    replay.add_argument("--predictions", required=True)
+    replay.add_argument("--prompt-version", choices=PROMPT_VERSIONS, default=MINIMAL_V1)
+    replay.add_argument("--output-dir", required=True)
+    replay.add_argument("--api-key")
+    replay.add_argument("--timeout", type=float, default=120.0)
+    replay.set_defaults(handler=command_replay_logiqa_prompts)
     return parser
 
 

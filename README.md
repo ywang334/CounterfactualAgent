@@ -104,3 +104,14 @@ hierarchical-control audit-logiqa-pilot \
 ```
 
 审计保留 strict 结果，同时用仅识别显式 `FINAL_ANSWER:` 标记的 tolerant parser 复核格式失败，并输出 `audit_summary.json`、`audit_cases.jsonl` 和 `audit_report.md`。报告中的 Oracle 明确标记 `posthoc_oracle=true`，使用 gold 后验选择，不能作为可部署策略。
+
+已有 Pilot 的 Solver 状态可用版本化 prompt 回放 Critic/Refiner；`minimal_v1` 保持原有行为且仍为默认版本，`structured_v2` 必须显式指定：
+
+```bash
+hierarchical-control replay-logiqa-prompts \
+  --predictions artifacts/pilot_logiqa/predictions.jsonl \
+  --prompt-version structured_v2 \
+  --output-dir artifacts/pilot_logiqa/prompt_dev_structured_v2
+```
+
+回放从 Pilot 的 `summary.json` 继承 backend、模型、温度、生成上限和 `extra_body`，不会重新调用 Solver。每个协作阶段保存 checkpoint，完整样本立即追加到新目录的 `predictions.jsonl`，中断恢复不会重复已完成调用。输出同时包含 `summary.json` 和 `report.md`；这 50 条明确标记为 prompt development set（`deployable_result=false`），不能视为最终测试结果。
