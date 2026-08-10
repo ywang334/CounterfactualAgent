@@ -1,0 +1,109 @@
+{
+  "precritic_training_protocol": true,
+  "offline_prepare": true,
+  "mock_only": false,
+  "backend_initialized": false,
+  "model_calls": 0,
+  "controller_trained": false,
+  "identity_key": "sample_id == content_sha256",
+  "question_id_used_for_identity_or_join": false,
+  "samples": 1000,
+  "unique_content_sha256": 1000,
+  "unique_question_id": 997,
+  "source_counts": {
+    "collection_200": 200,
+    "collection_800": 800
+  },
+  "label_counts": {
+    "correct_to_correct": 635,
+    "correct_to_wrong": 79,
+    "wrong_to_correct": 64,
+    "wrong_to_wrong": 222
+  },
+  "cost_available": 800,
+  "cost_unavailable": 200,
+  "source_files": {
+    "collection_200": {
+      "path": "/data/wy/agent/CounterfactualAgent/artifacts/logiqa_action_collection_200/rollouts.jsonl",
+      "sha256": "3ab3e27ee40450be84e394cb947d9ac5659e664609c326c9233f9cd836b6ee3f"
+    },
+    "collection_800": {
+      "path": "/data/wy/agent/CounterfactualAgent/artifacts/logiqa_precritic_collection_800/rollouts.jsonl",
+      "sha256": "ee00a652b696f95556b46fac82da3ab417d16335a0f6614f7ce6ed8448e1f1ae"
+    },
+    "pilot_predictions": {
+      "path": "/data/wy/agent/CounterfactualAgent/artifacts/pilot_logiqa/predictions.jsonl",
+      "sha256": "13183369908f147441715c082847cfe6fa7a3f5687f7ed3cbccedfc7277f5786"
+    },
+    "pilot_summary": {
+      "path": "/data/wy/agent/CounterfactualAgent/artifacts/pilot_logiqa/summary.json",
+      "sha256": "685c773d0c7f1ff96e729506b89b6c457dfff6df5f559cac1d0d4b9ca0af97d2"
+    },
+    "validation_predictions": {
+      "path": "/data/wy/agent/CounterfactualAgent/artifacts/logiqa_policy_validation_100/predictions.jsonl",
+      "sha256": "39db4c6152c51371658205addfa35cb4841168758b3953016ad3f0823337187c"
+    },
+    "dev_data": {
+      "path": "/tmp/logiqa2-dev.txt",
+      "sha256": "bbefb563b7ddc02640ccdc314c1315d5727dba48539d0ecdd126fa351e511b09"
+    }
+  },
+  "source_sha256_contract_enforced": true,
+  "training_examples_sha256": "52d87713773308bc6085fa7d35f3c1be29f6de6e35633a286c68c0e241007303",
+  "label_semantics": {
+    "policy": "effective structured_v2 Critic-only",
+    "KEEP": "use Solver tolerant answer",
+    "REVISE": "use effective proposed A-D answer",
+    "classes": [
+      "correct_to_correct",
+      "correct_to_wrong",
+      "wrong_to_correct",
+      "wrong_to_wrong"
+    ],
+    "gold_used_only_for_offline_label": true
+  },
+  "feature_schema": {
+    "allowed": [
+      "problem.passage",
+      "problem.question",
+      "problem.options.A-D",
+      "solver.raw_output",
+      "solver.parse_status",
+      "solver.usage"
+    ],
+    "forbidden": [
+      "gold",
+      "Critic output",
+      "Refiner output",
+      "continuation answer",
+      "action outcome"
+    ]
+  },
+  "cost_targets": {
+    "available_samples": 800,
+    "unavailable_samples": 200,
+    "regression_eligible_samples": 800,
+    "collection_800_service_reported": true,
+    "collection_200_estimated": false,
+    "collection_200_unavailable_reason": "Collection 200 stores combined structured_v2 Critic+Refiner continuation cost, not a separate Critic stage; Critic cost is unavailable and is not estimated."
+  },
+  "content_overlap_checks": {
+    "collection_200_vs_collection_800": 0,
+    "training_vs_pilot": 0,
+    "training_vs_validation": 0,
+    "final_test_vs_training": 0,
+    "final_test_vs_pilot": 0,
+    "final_test_vs_validation": 0,
+    "final_test_internal_duplicates": 0
+  },
+  "final_test": {
+    "path": "/data/wy/agent/CounterfactualAgent/artifacts/logiqa_final_test_500/split_manifest.json",
+    "manifest_sha256": "4d8afee2184289b1e4c82f3fd14afb361bfe3f4e77b8f9657a6d21c00071c3e4",
+    "split_sha256": "3063ec62c332860dfdf6fc9a9cc195ec7e3cef661209b1180868d55bb7ab7bd3",
+    "sample_count": 500,
+    "final_test": true,
+    "sealed": true,
+    "never_evaluated": true,
+    "model_calls": 0
+  }
+}

@@ -32,6 +32,7 @@ from .precritic_collection import (
     collect_precritic_rollouts,
     prepare_precritic_collection,
 )
+from .precritic_training_protocol import prepare_precritic_training_protocol
 from .prompt_stability_audit import run_prompt_stability_audit
 from .predictors import ActionModelPredictor, BudgetModelPredictor
 from .training import train_action_controller, train_budget_allocator
@@ -241,6 +242,20 @@ def command_collect_precritic_rollouts(args: argparse.Namespace) -> dict[str, An
         output_dir=args.output_dir,
         backend=backend,
         settings=settings,
+    )
+
+
+def command_prepare_precritic_training_protocol(
+    args: argparse.Namespace,
+) -> dict[str, Any]:
+    return prepare_precritic_training_protocol(
+        collection_200_path=args.collection_200,
+        collection_800_path=args.collection_800,
+        pilot_predictions_path=args.pilot_predictions,
+        validation_predictions_path=args.validation_predictions,
+        dev_data_path=args.dev_data_path,
+        training_output_dir=args.training_output_dir,
+        final_test_output_dir=args.final_test_output_dir,
     )
 
 
@@ -586,6 +601,41 @@ def build_parser() -> argparse.ArgumentParser:
     collect_precritic.add_argument("--api-key")
     collect_precritic.add_argument("--timeout", type=float, default=120.0)
     collect_precritic.set_defaults(handler=command_collect_precritic_rollouts)
+
+    training_protocol = subparsers.add_parser(
+        "prepare-precritic-training-protocol"
+    )
+    training_protocol.add_argument(
+        "--collection-200",
+        default="artifacts/logiqa_action_collection_200/rollouts.jsonl",
+    )
+    training_protocol.add_argument(
+        "--collection-800",
+        default="artifacts/logiqa_precritic_collection_800/rollouts.jsonl",
+    )
+    training_protocol.add_argument(
+        "--pilot-predictions",
+        default="artifacts/pilot_logiqa/predictions.jsonl",
+    )
+    training_protocol.add_argument(
+        "--validation-predictions",
+        default="artifacts/logiqa_policy_validation_100/predictions.jsonl",
+    )
+    training_protocol.add_argument(
+        "--dev-data-path",
+        default="/tmp/logiqa2-dev.txt",
+    )
+    training_protocol.add_argument(
+        "--training-output-dir",
+        default="artifacts/precritic_training_1000",
+    )
+    training_protocol.add_argument(
+        "--final-test-output-dir",
+        default="artifacts/logiqa_final_test_500",
+    )
+    training_protocol.set_defaults(
+        handler=command_prepare_precritic_training_protocol
+    )
 
     validation = subparsers.add_parser("validate-logiqa-policies")
     validation.add_argument(
