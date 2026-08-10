@@ -27,6 +27,7 @@ from .logiqa_policy_validation import (
 )
 from .logiqa_prompts import MINIMAL_V1, PROMPT_VERSIONS
 from .logiqa_replay import load_logiqa_replay_settings, run_logiqa_prompt_replay
+from .precritic_probe import run_precritic_gate_probe
 from .prompt_stability_audit import run_prompt_stability_audit
 from .predictors import ActionModelPredictor, BudgetModelPredictor
 from .training import train_action_controller, train_budget_allocator
@@ -193,6 +194,14 @@ def command_audit_prompt_stability(args: argparse.Namespace) -> dict[str, Any]:
 
 def command_audit_critic_gating(args: argparse.Namespace) -> dict[str, Any]:
     return run_critic_gating_audit(
+        collection_rollouts=args.collection_rollouts,
+        validation_predictions=args.validation_predictions,
+        output_dir=args.output_dir,
+    )
+
+
+def command_probe_precritic_gate(args: argparse.Namespace) -> dict[str, Any]:
+    return run_precritic_gate_probe(
         collection_rollouts=args.collection_rollouts,
         validation_predictions=args.validation_predictions,
         output_dir=args.output_dir,
@@ -496,6 +505,25 @@ def build_parser() -> argparse.ArgumentParser:
         default="artifacts/critic_gating_audit",
     )
     critic_gating.set_defaults(handler=command_audit_critic_gating)
+
+    precritic_probe = subparsers.add_parser("probe-precritic-gate")
+    precritic_probe.add_argument(
+        "--collection-rollouts",
+        "--collection",
+        dest="collection_rollouts",
+        default="artifacts/logiqa_action_collection_200/rollouts.jsonl",
+    )
+    precritic_probe.add_argument(
+        "--validation-predictions",
+        "--validation",
+        dest="validation_predictions",
+        default="artifacts/logiqa_policy_validation_100/predictions.jsonl",
+    )
+    precritic_probe.add_argument(
+        "--output-dir",
+        default="artifacts/precritic_gate_probe",
+    )
+    precritic_probe.set_defaults(handler=command_probe_precritic_gate)
 
     validation = subparsers.add_parser("validate-logiqa-policies")
     validation.add_argument(
