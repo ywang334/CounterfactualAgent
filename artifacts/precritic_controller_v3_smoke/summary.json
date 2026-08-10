@@ -1,0 +1,363 @@
+{
+  "precritic_controller_v3_smoke": true,
+  "architecture_only": true,
+  "feature_pipeline_validated": true,
+  "mock_only": false,
+  "local_files_only": true,
+  "deployable": false,
+  "controller_trained": false,
+  "training_steps": 0,
+  "backward_calls": 0,
+  "optimizer_initialized": false,
+  "oof_generated": false,
+  "threshold_selected": false,
+  "operating_point_selected": false,
+  "policy_evaluated": false,
+  "model_calls": 0,
+  "llm_calls": 0,
+  "backend_initialized": false,
+  "final_test_evaluated": false,
+  "final_test_examples_read": false,
+  "v1_v2_modified": false,
+  "prompt_modified": false,
+  "parser_modified": false,
+  "architecture": {
+    "embedding_dim": 384,
+    "d_model": 128,
+    "input_projection": "384->128",
+    "field_type_embeddings": 9,
+    "field_types": [
+      "cls",
+      "passage",
+      "question",
+      "option_A",
+      "option_B",
+      "option_C",
+      "option_D",
+      "solver_output",
+      "state"
+    ],
+    "base_field_order": [
+      "cls",
+      "passage",
+      "question",
+      "option_A",
+      "option_B",
+      "option_C",
+      "option_D",
+      "solver_chunk_0..N",
+      "state"
+    ],
+    "structured_state_features": [
+      "log1p_prompt_tokens_over_10",
+      "log1p_completion_tokens_over_10",
+      "log1p_total_tokens_over_10",
+      "solver_calls",
+      "strict_parse_success",
+      "tolerant_parse_success",
+      "tolerant_match_count_capped_over_3",
+      "tolerant_conflict",
+      "parse_status_both_parsed_agree",
+      "parse_status_strict_only",
+      "parse_status_tolerant_only",
+      "parse_status_parsed_conflict",
+      "parse_status_unparsed",
+      "solver_answer_A",
+      "solver_answer_B",
+      "solver_answer_C",
+      "solver_answer_D",
+      "solver_answer_NONE"
+    ],
+    "structured_state_dim": 18,
+    "layers": 2,
+    "nhead": 4,
+    "feedforward_dim": 512,
+    "dropout": 0.1,
+    "factorized_heads": [
+      "solver_error",
+      "critic_fix",
+      "critic_harm"
+    ],
+    "transition_auxiliary_classes": 4,
+    "cost_head": false,
+    "hard_budget_logic_modified": false,
+    "cost_fallback_logic_modified": false
+  },
+  "encoder": {
+    "name": "sentence-transformers/all-MiniLM-L6-v2",
+    "dimension": 384,
+    "max_seq_length": 256,
+    "max_seq_length_source": "local SentenceTransformer configuration",
+    "solver_chunking": "deterministic tokenizer content-token chunks",
+    "silent_truncation": false,
+    "embedding_forward_calls": 1,
+    "device": "cpu",
+    "frozen": true
+  },
+  "parameter_counts": {
+    "controller": {
+      "total": 450695,
+      "trainable": 450695,
+      "frozen": 0
+    },
+    "minilm_encoder": {
+      "total": 22713216,
+      "trainable": 0,
+      "frozen": 22713216
+    },
+    "controller_expected_trainable_range": [
+      400000,
+      600000
+    ]
+  },
+  "smoke": {
+    "seed": 20260821,
+    "selection": "largest Solver tokenizer lengths; stable source-order tie break",
+    "samples": 8,
+    "text_embedding_shape": [
+      8,
+      11,
+      384
+    ],
+    "type_id_shape": [
+      8,
+      11
+    ],
+    "padding_mask_shape": [
+      8,
+      11
+    ],
+    "structured_state_shape": [
+      8,
+      18
+    ],
+    "state_positions_shape": [
+      8
+    ],
+    "solver_chunk_counts": [
+      3,
+      2,
+      2,
+      2,
+      2,
+      2,
+      2,
+      1
+    ],
+    "solver_source_token_counts": [
+      548,
+      419,
+      366,
+      356,
+      305,
+      262,
+      258,
+      242
+    ],
+    "factorized_logits_shape": [
+      8
+    ],
+    "transition_logits_shape": [
+      8,
+      4
+    ],
+    "factorized_transition_probability_shape": [
+      8,
+      4
+    ],
+    "transition_aux_probability_shape": [
+      8,
+      4
+    ],
+    "probability_checks_passed": true,
+    "controller_forward_calls": 1
+  },
+  "final_test_guard": {
+    "manifest_path": "/data/wy/agent/CounterfactualAgent/artifacts/logiqa_final_test_500/split_manifest.json",
+    "manifest_sha256": "4d8afee2184289b1e4c82f3fd14afb361bfe3f4e77b8f9657a6d21c00071c3e4",
+    "split_sha256": "3063ec62c332860dfdf6fc9a9cc195ec7e3cef661209b1180868d55bb7ab7bd3",
+    "sealed": true,
+    "never_evaluated": true,
+    "final_test_evaluated": false,
+    "manifest_only_read": true,
+    "examples_read": false,
+    "model_calls": 0
+  },
+  "integrity": {
+    "before": {
+      "training_examples": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_training_1000/training_examples.jsonl",
+        "sha256": "52d87713773308bc6085fa7d35f3c1be29f6de6e35633a286c68c0e241007303",
+        "bytes": 2417831
+      },
+      "training_manifest": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_training_1000/manifest.json",
+        "sha256": "180a8372117eaf321f1b39ed4a0cd0318a3aa0f35845517f4259a4cddbd0f455",
+        "bytes": 3821
+      },
+      "final_test_manifest": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/logiqa_final_test_500/split_manifest.json",
+        "sha256": "4d8afee2184289b1e4c82f3fd14afb361bfe3f4e77b8f9657a6d21c00071c3e4",
+        "bytes": 66677
+      },
+      "controller_v1_source": {
+        "path": "/data/wy/agent/CounterfactualAgent/hierarchical_control/precritic_controller_v1.py",
+        "sha256": "6ab6ef943fcef5e308ad8f8a83115f643981e598be8a3fc1424618158e18b2ff",
+        "bytes": 57689
+      },
+      "controller_v2_source": {
+        "path": "/data/wy/agent/CounterfactualAgent/hierarchical_control/precritic_controller_v2.py",
+        "sha256": "8abdd1f2d2b8151019b22ba5519c75dd4c0b1a90016bd74ede4c6beacd56c8fa",
+        "bytes": 54877
+      },
+      "precritic_controller_v1/primary_model.pt": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v1/primary_model.pt",
+        "sha256": "f67e2ebbb0987fe1dce81e3ab9aed50abe4ade9fd17234b4dbca1dfb38e26052",
+        "bytes": 107244
+      },
+      "precritic_controller_v1/seed_metrics.json": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v1/seed_metrics.json",
+        "sha256": "57a7579a8fc4f5d82495f0d6befceb8c33360c3730e29b9190018f9ba003c5f7",
+        "bytes": 745500
+      },
+      "precritic_controller_v1/oof_predictions.jsonl": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v1/oof_predictions.jsonl",
+        "sha256": "b36ae7a9d858f6033534ad05e278faefe74f24f2bc85772fbcd79ee19d762324",
+        "bytes": 3967581
+      },
+      "precritic_controller_v1/validation_predictions.jsonl": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v1/validation_predictions.jsonl",
+        "sha256": "e3453c0270134788c5f2a7240e713e90ecc889ee30725d52d8311d6444a48259",
+        "bytes": 430345
+      },
+      "precritic_controller_v1/summary.json": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v1/summary.json",
+        "sha256": "16fc44f56072a7b09e794365e59cbd99ef7401184ca56943e72650565066f6e4",
+        "bytes": 163325
+      },
+      "precritic_controller_v1/report.md": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v1/report.md",
+        "sha256": "59bcb4330bc4ababd1cf15bfaeb312bc3826f09403bc478006762d53fb4766b2",
+        "bytes": 2478
+      },
+      "precritic_controller_v2_factorized/primary_model.pt": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v2_factorized/primary_model.pt",
+        "sha256": "19460a03f671a43f8d058c00255f0950f8e9cc17c2f3cb41c7854a91fd83b469",
+        "bytes": 109442
+      },
+      "precritic_controller_v2_factorized/seed_metrics.json": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v2_factorized/seed_metrics.json",
+        "sha256": "8d08180fad03c76ead1fdd718e936b7a1a3d7212f323b07248371722d8b7ce90",
+        "bytes": 791400
+      },
+      "precritic_controller_v2_factorized/oof_predictions.jsonl": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v2_factorized/oof_predictions.jsonl",
+        "sha256": "b6fcd7065003809c02469411aaaca3ce74e376e4e0b9ba405277e2efd720c76c",
+        "bytes": 5512880
+      },
+      "precritic_controller_v2_factorized/validation_predictions.jsonl": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v2_factorized/validation_predictions.jsonl",
+        "sha256": "6163fcb5ef32f8f39234e64e5cfc53ebb54f1262c95ffbbf15dc595257a2e277",
+        "bytes": 584954
+      },
+      "precritic_controller_v2_factorized/summary.json": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v2_factorized/summary.json",
+        "sha256": "cb8920e98bf6b40427588321078ff3da9fb4cf1579f90c085a0c6b43a6f69e13",
+        "bytes": 182011
+      },
+      "precritic_controller_v2_factorized/report.md": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v2_factorized/report.md",
+        "sha256": "69b6c212d1cab836cf7dbb6d7e8427f60bde387d1f9f1b24e6469accb10b1d51",
+        "bytes": 3212
+      }
+    },
+    "after": {
+      "training_examples": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_training_1000/training_examples.jsonl",
+        "sha256": "52d87713773308bc6085fa7d35f3c1be29f6de6e35633a286c68c0e241007303",
+        "bytes": 2417831
+      },
+      "training_manifest": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_training_1000/manifest.json",
+        "sha256": "180a8372117eaf321f1b39ed4a0cd0318a3aa0f35845517f4259a4cddbd0f455",
+        "bytes": 3821
+      },
+      "final_test_manifest": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/logiqa_final_test_500/split_manifest.json",
+        "sha256": "4d8afee2184289b1e4c82f3fd14afb361bfe3f4e77b8f9657a6d21c00071c3e4",
+        "bytes": 66677
+      },
+      "controller_v1_source": {
+        "path": "/data/wy/agent/CounterfactualAgent/hierarchical_control/precritic_controller_v1.py",
+        "sha256": "6ab6ef943fcef5e308ad8f8a83115f643981e598be8a3fc1424618158e18b2ff",
+        "bytes": 57689
+      },
+      "controller_v2_source": {
+        "path": "/data/wy/agent/CounterfactualAgent/hierarchical_control/precritic_controller_v2.py",
+        "sha256": "8abdd1f2d2b8151019b22ba5519c75dd4c0b1a90016bd74ede4c6beacd56c8fa",
+        "bytes": 54877
+      },
+      "precritic_controller_v1/primary_model.pt": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v1/primary_model.pt",
+        "sha256": "f67e2ebbb0987fe1dce81e3ab9aed50abe4ade9fd17234b4dbca1dfb38e26052",
+        "bytes": 107244
+      },
+      "precritic_controller_v1/seed_metrics.json": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v1/seed_metrics.json",
+        "sha256": "57a7579a8fc4f5d82495f0d6befceb8c33360c3730e29b9190018f9ba003c5f7",
+        "bytes": 745500
+      },
+      "precritic_controller_v1/oof_predictions.jsonl": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v1/oof_predictions.jsonl",
+        "sha256": "b36ae7a9d858f6033534ad05e278faefe74f24f2bc85772fbcd79ee19d762324",
+        "bytes": 3967581
+      },
+      "precritic_controller_v1/validation_predictions.jsonl": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v1/validation_predictions.jsonl",
+        "sha256": "e3453c0270134788c5f2a7240e713e90ecc889ee30725d52d8311d6444a48259",
+        "bytes": 430345
+      },
+      "precritic_controller_v1/summary.json": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v1/summary.json",
+        "sha256": "16fc44f56072a7b09e794365e59cbd99ef7401184ca56943e72650565066f6e4",
+        "bytes": 163325
+      },
+      "precritic_controller_v1/report.md": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v1/report.md",
+        "sha256": "59bcb4330bc4ababd1cf15bfaeb312bc3826f09403bc478006762d53fb4766b2",
+        "bytes": 2478
+      },
+      "precritic_controller_v2_factorized/primary_model.pt": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v2_factorized/primary_model.pt",
+        "sha256": "19460a03f671a43f8d058c00255f0950f8e9cc17c2f3cb41c7854a91fd83b469",
+        "bytes": 109442
+      },
+      "precritic_controller_v2_factorized/seed_metrics.json": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v2_factorized/seed_metrics.json",
+        "sha256": "8d08180fad03c76ead1fdd718e936b7a1a3d7212f323b07248371722d8b7ce90",
+        "bytes": 791400
+      },
+      "precritic_controller_v2_factorized/oof_predictions.jsonl": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v2_factorized/oof_predictions.jsonl",
+        "sha256": "b6fcd7065003809c02469411aaaca3ce74e376e4e0b9ba405277e2efd720c76c",
+        "bytes": 5512880
+      },
+      "precritic_controller_v2_factorized/validation_predictions.jsonl": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v2_factorized/validation_predictions.jsonl",
+        "sha256": "6163fcb5ef32f8f39234e64e5cfc53ebb54f1262c95ffbbf15dc595257a2e277",
+        "bytes": 584954
+      },
+      "precritic_controller_v2_factorized/summary.json": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v2_factorized/summary.json",
+        "sha256": "cb8920e98bf6b40427588321078ff3da9fb4cf1579f90c085a0c6b43a6f69e13",
+        "bytes": 182011
+      },
+      "precritic_controller_v2_factorized/report.md": {
+        "path": "/data/wy/agent/CounterfactualAgent/artifacts/precritic_controller_v2_factorized/report.md",
+        "sha256": "69b6c212d1cab836cf7dbb6d7e8427f60bde387d1f9f1b24e6469accb10b1d51",
+        "bytes": 3212
+      }
+    },
+    "all_frozen_inputs_and_history_unchanged": true
+  }
+}

@@ -35,6 +35,7 @@ from .precritic_collection import (
 from .precritic_controller_v1 import train_precritic_controller_v1
 from .precritic_controller_v1_audit import run_precritic_controller_v1_audit
 from .precritic_controller_v2 import train_precritic_controller_v2
+from .precritic_controller_v3 import run_precritic_controller_v3_smoke
 from .precritic_representation_audit import (
     run_precritic_representation_audit,
 )
@@ -320,6 +321,18 @@ def command_audit_precritic_representation(
         validation_path=args.validation,
         final_test_manifest_path=args.final_test_manifest,
         output_dir=args.output_dir,
+    )
+
+
+def command_smoke_precritic_controller_v3(
+    args: argparse.Namespace,
+) -> dict[str, Any]:
+    return run_precritic_controller_v3_smoke(
+        training_path=args.training,
+        training_manifest_path=args.training_manifest,
+        final_test_manifest_path=args.final_test_manifest,
+        output_dir=args.output_dir,
+        sample_count=args.sample_count,
     )
 
 
@@ -841,6 +854,32 @@ def build_parser() -> argparse.ArgumentParser:
     )
     representation_audit.set_defaults(
         handler=command_audit_precritic_representation
+    )
+
+    controller_v3_smoke = subparsers.add_parser(
+        "smoke-precritic-controller-v3"
+    )
+    controller_v3_smoke.add_argument(
+        "--training",
+        default="artifacts/precritic_training_1000/training_examples.jsonl",
+    )
+    controller_v3_smoke.add_argument(
+        "--training-manifest",
+        default="artifacts/precritic_training_1000/manifest.json",
+    )
+    controller_v3_smoke.add_argument(
+        "--final-test-manifest",
+        default="artifacts/logiqa_final_test_500/split_manifest.json",
+    )
+    controller_v3_smoke.add_argument(
+        "--output-dir",
+        default="artifacts/precritic_controller_v3_smoke",
+    )
+    controller_v3_smoke.add_argument(
+        "--sample-count", type=int, default=8
+    )
+    controller_v3_smoke.set_defaults(
+        handler=command_smoke_precritic_controller_v3
     )
 
     validation = subparsers.add_parser("validate-logiqa-policies")
