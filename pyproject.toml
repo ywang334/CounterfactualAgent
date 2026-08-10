@@ -1,0 +1,29 @@
+[build-system]
+requires = ["setuptools>=69", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hierarchical-control"
+version = "0.1.0"
+description = "Supervised hierarchical budget and communication control for frozen LLM agents"
+readme = "README.md"
+requires-python = ">=3.10"
+dependencies = [
+  "langgraph>=0.2,<2",
+  "openai>=1.40,<3",
+  "torch>=2.1",
+]
+
+[project.optional-dependencies]
+minilm = ["sentence-transformers>=3.4,<4"]
+test = ["pytest>=8"]
+
+[project.scripts]
+hierarchical-control = "hierarchical_control.cli:main"
+
+[tool.setuptools.packages.find]
+include = ["hierarchical_control*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "-q"

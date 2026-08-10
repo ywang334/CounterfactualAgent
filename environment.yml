@@ -1,0 +1,15 @@
+name: counterfactual-agent
+channels:
+  - pytorch
+  - conda-forge
+dependencies:
+  - python=3.11
+  - pytorch>=2.1
+  - cpuonly
+  - pip
+  - pip:
+      - langgraph>=0.2,<2
+      - openai>=1.40,<3
+      - sentence-transformers==3.4.1
+      - pytest>=8
+      - -e .

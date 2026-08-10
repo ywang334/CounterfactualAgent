@@ -1,0 +1,18 @@
+{
+  "budget_tiers": {
+    "ZERO": {"extra_tokens": 0, "extra_calls": 0},
+    "LOW": {"extra_tokens": 128, "extra_calls": 2},
+    "MEDIUM": {"extra_tokens": 384, "extra_calls": 2},
+    "HIGH": {"extra_tokens": 1024, "extra_calls": 2}
+  },
+  "action_token_caps": {"SHORT": 64, "MEDIUM": 192, "FULL": 512},
+  "solver_max_tokens": 256,
+  "pilot_generation_caps": {"solver": 512, "critic": 512, "refiner": 512},
+  "pilot_request_extra_body": {"chat_template_kwargs": {"enable_thinking": false}},
+  "max_collaboration_steps": 2,
+  "collection_limit": {"extra_tokens": 4096, "extra_calls": 16},
+  "reference_action": "SHORT",
+  "quality_tolerance": 1e-8,
+  "call_cost_weight": 1024.0,
+  "seed": 7
+}
