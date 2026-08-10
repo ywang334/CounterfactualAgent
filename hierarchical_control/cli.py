@@ -28,6 +28,10 @@ from .logiqa_policy_validation import (
 from .logiqa_prompts import MINIMAL_V1, PROMPT_VERSIONS
 from .logiqa_replay import load_logiqa_replay_settings, run_logiqa_prompt_replay
 from .precritic_probe import run_precritic_gate_probe
+from .precritic_collection import (
+    collect_precritic_rollouts,
+    prepare_precritic_collection,
+)
 from .prompt_stability_audit import run_prompt_stability_audit
 from .predictors import ActionModelPredictor, BudgetModelPredictor
 from .training import train_action_controller, train_budget_allocator
@@ -205,6 +209,38 @@ def command_probe_precritic_gate(args: argparse.Namespace) -> dict[str, Any]:
         collection_rollouts=args.collection_rollouts,
         validation_predictions=args.validation_predictions,
         output_dir=args.output_dir,
+    )
+
+
+def command_prepare_precritic_collection(args: argparse.Namespace) -> dict[str, Any]:
+    settings = load_action_collection_settings()
+    return prepare_precritic_collection(
+        data_path=args.data_path,
+        output_dir=args.output_dir,
+        settings=settings,
+        mock_only=args.mock_only,
+    )
+
+
+def command_collect_precritic_rollouts(args: argparse.Namespace) -> dict[str, Any]:
+    settings = load_action_collection_settings()
+    if args.backend == "mock":
+        backend = MockBackend()
+    else:
+        api_key = args.api_key or os.environ.get("OPENAI_API_KEY") or "local"
+        backend = OpenAIBackend(
+            base_url=settings.base_url,
+            api_key=api_key,
+            model=settings.model,
+            temperature=settings.temperature,
+            timeout=args.timeout,
+            extra_body=settings.extra_body,
+        )
+    return collect_precritic_rollouts(
+        data_path=args.data_path,
+        output_dir=args.output_dir,
+        backend=backend,
+        settings=settings,
     )
 
 
@@ -524,6 +560,32 @@ def build_parser() -> argparse.ArgumentParser:
         default="artifacts/precritic_gate_probe",
     )
     precritic_probe.set_defaults(handler=command_probe_precritic_gate)
+
+    prepare_precritic = subparsers.add_parser("prepare-precritic-collection")
+    prepare_precritic.add_argument("--data-path", required=True)
+    prepare_precritic.add_argument(
+        "--output-dir",
+        default="artifacts/logiqa_precritic_collection_800",
+    )
+    prepare_precritic.add_argument(
+        "--mock-only",
+        action="store_true",
+        help="Prepare a separate split intended only for MockBackend flow tests.",
+    )
+    prepare_precritic.set_defaults(handler=command_prepare_precritic_collection)
+
+    collect_precritic = subparsers.add_parser("collect-precritic-rollouts")
+    collect_precritic.add_argument("--data-path", required=True)
+    collect_precritic.add_argument(
+        "--output-dir",
+        default="artifacts/logiqa_precritic_collection_800",
+    )
+    collect_precritic.add_argument(
+        "--backend", choices=("openai", "mock"), default="openai"
+    )
+    collect_precritic.add_argument("--api-key")
+    collect_precritic.add_argument("--timeout", type=float, default=120.0)
+    collect_precritic.set_defaults(handler=command_collect_precritic_rollouts)
 
     validation = subparsers.add_parser("validate-logiqa-policies")
     validation.add_argument(
