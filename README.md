@@ -115,3 +115,14 @@ hierarchical-control replay-logiqa-prompts \
 ```
 
 回放从 Pilot 的 `summary.json` 继承 backend、模型、温度、生成上限和 `extra_body`，不会重新调用 Solver。每个协作阶段保存 checkpoint，完整样本立即追加到新目录的 `predictions.jsonl`，中断恢复不会重复已完成调用。输出同时包含 `summary.json` 和 `report.md`；这 50 条明确标记为 prompt development set（`deployable_result=false`），不能视为最终测试结果。
+
+两版已保存 continuation 可进行一次纯离线稳定性审计；命令不会初始化 backend、调用模型或训练控制器：
+
+```bash
+hierarchical-control audit-prompt-stability \
+  --minimal-predictions artifacts/pilot_logiqa/predictions.jsonl \
+  --structured-predictions artifacts/pilot_logiqa/prompt_dev_structured_v2/predictions.jsonl \
+  --output-dir artifacts/pilot_logiqa/prompt_stability_audit
+```
+
+审计比较纠错、退化、实际成本、Critic 错误检测和 corrected/degraded 标签集合稳定性，并为两版分别计算明确标记 `deployable=false` 的最小成本 posthoc Oracle。它不会自动选择、冻结或修改 prompt。

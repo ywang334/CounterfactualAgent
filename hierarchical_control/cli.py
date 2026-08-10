@@ -18,6 +18,7 @@ from .logiqa_audit import run_logiqa_audit
 from .logiqa_pilot import run_logiqa_pilot
 from .logiqa_prompts import MINIMAL_V1, PROMPT_VERSIONS
 from .logiqa_replay import load_logiqa_replay_settings, run_logiqa_prompt_replay
+from .prompt_stability_audit import run_prompt_stability_audit
 from .predictors import ActionModelPredictor, BudgetModelPredictor
 from .training import train_action_controller, train_budget_allocator
 
@@ -170,6 +171,14 @@ def command_replay_logiqa_prompts(args: argparse.Namespace) -> dict[str, Any]:
         prompt_version=args.prompt_version,
         output_dir=args.output_dir,
         backend=backend,
+    )
+
+
+def command_audit_prompt_stability(args: argparse.Namespace) -> dict[str, Any]:
+    return run_prompt_stability_audit(
+        minimal_predictions=args.minimal_predictions,
+        structured_predictions=args.structured_predictions,
+        output_dir=args.output_dir,
     )
 
 
@@ -388,6 +397,27 @@ def build_parser() -> argparse.ArgumentParser:
     replay.add_argument("--api-key")
     replay.add_argument("--timeout", type=float, default=120.0)
     replay.set_defaults(handler=command_replay_logiqa_prompts)
+
+    stability = subparsers.add_parser("audit-prompt-stability")
+    stability.add_argument(
+        "--minimal-predictions",
+        "--v1-predictions",
+        dest="minimal_predictions",
+        default="artifacts/pilot_logiqa/predictions.jsonl",
+    )
+    stability.add_argument(
+        "--structured-predictions",
+        "--v2-predictions",
+        dest="structured_predictions",
+        default=(
+            "artifacts/pilot_logiqa/prompt_dev_structured_v2/predictions.jsonl"
+        ),
+    )
+    stability.add_argument(
+        "--output-dir",
+        default="artifacts/pilot_logiqa/prompt_stability_audit",
+    )
+    stability.set_defaults(handler=command_audit_prompt_stability)
     return parser
 
 
