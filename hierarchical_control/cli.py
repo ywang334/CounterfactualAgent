@@ -9,6 +9,7 @@ from typing import Any
 from .backend import MockBackend, OpenAIBackend
 from .collection import collect_action_labels, collect_budget_labels
 from .config import Action, BudgetTier, ExperimentConfig
+from .critic_gating_audit import run_critic_gating_audit
 from .encoders import HashingEncoder, MiniLMEncoder
 from .engine import CollaborationEngine
 from .evaluator import ExactMatchEvaluator, MockEvaluator
@@ -186,6 +187,14 @@ def command_audit_prompt_stability(args: argparse.Namespace) -> dict[str, Any]:
     return run_prompt_stability_audit(
         minimal_predictions=args.minimal_predictions,
         structured_predictions=args.structured_predictions,
+        output_dir=args.output_dir,
+    )
+
+
+def command_audit_critic_gating(args: argparse.Namespace) -> dict[str, Any]:
+    return run_critic_gating_audit(
+        collection_rollouts=args.collection_rollouts,
+        validation_predictions=args.validation_predictions,
         output_dir=args.output_dir,
     )
 
@@ -468,6 +477,25 @@ def build_parser() -> argparse.ArgumentParser:
         default="artifacts/pilot_logiqa/prompt_stability_audit",
     )
     stability.set_defaults(handler=command_audit_prompt_stability)
+
+    critic_gating = subparsers.add_parser("audit-critic-gating")
+    critic_gating.add_argument(
+        "--collection-rollouts",
+        "--collection",
+        dest="collection_rollouts",
+        default="artifacts/logiqa_action_collection_200/rollouts.jsonl",
+    )
+    critic_gating.add_argument(
+        "--validation-predictions",
+        "--validation",
+        dest="validation_predictions",
+        default="artifacts/logiqa_policy_validation_100/predictions.jsonl",
+    )
+    critic_gating.add_argument(
+        "--output-dir",
+        default="artifacts/critic_gating_audit",
+    )
+    critic_gating.set_defaults(handler=command_audit_critic_gating)
 
     validation = subparsers.add_parser("validate-logiqa-policies")
     validation.add_argument(
