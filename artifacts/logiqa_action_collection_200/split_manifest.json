@@ -1,0 +1,829 @@
+{
+  "logiqa_action_collection": true,
+  "mock_only": false,
+  "budget_semantics_version": 2,
+  "hard_budget": "completion_tokens+calls",
+  "optimization_cost": "total_tokens+calls",
+  "data_split": "train",
+  "data_path": "/tmp/logiqa2-train.txt",
+  "seed": 20260812,
+  "sample_count": 200,
+  "content_normalization": "Unicode NFKC + casefold + collapsed whitespace",
+  "content_hash": "SHA256(canonical passage, question, ordered options)",
+  "selection_stats": {
+    "dataset_records": 12567,
+    "unique_content_records": 11678,
+    "within_train_duplicate_records_ignored": 889,
+    "historical_content_records_excluded": 19,
+    "eligible_unique_records": 11659
+  },
+  "exclusion_sources": {
+    "pilot_predictions": "/data/wy/agent/CounterfactualAgent/artifacts/pilot_logiqa/predictions.jsonl",
+    "pilot_unique_content": 50,
+    "validation_predictions": "/data/wy/agent/CounterfactualAgent/artifacts/logiqa_policy_validation_100/predictions.jsonl",
+    "validation_unique_content": 100,
+    "combined_unique_content": 150
+  },
+  "selected_samples": [
+    {
+      "question_id": 12813,
+      "content_sha256": "02cdff574d9ba1132a223fadd75ee673039c492e5076b941ad76ec10a1caf4dd"
+    },
+    {
+      "question_id": 5711,
+      "content_sha256": "a4fca47ff49bbd4891bc594024aca1faa5c6234f684886d68b48657b6efa3d3e"
+    },
+    {
+      "question_id": 3603,
+      "content_sha256": "f37665ae6f2c828b4345bede1d5171c2c628c2966a2169736ff7af616db0999a"
+    },
+    {
+      "question_id": 6234,
+      "content_sha256": "699a388bfae3c2a651b42f821c19dfc9a3d4abc141652beaef68b50fab265c13"
+    },
+    {
+      "question_id": 12175,
+      "content_sha256": "348b7a810819f134fbbd1799f8b0afc05cda8322c8f2ebf042bffa0bb7963a1a"
+    },
+    {
+      "question_id": 5957,
+      "content_sha256": "6d45ea7a8f09bac6b2ebcdae80525545a7a821dc2f99779ba14abfe78f4ba360"
+    },
+    {
+      "question_id": 7833,
+      "content_sha256": "8cb1ea91131db68a7676d7c22b0650597ea79acb4aacca04412a06bd0b8c4ca5"
+    },
+    {
+      "question_id": 3856,
+      "content_sha256": "289c9facbb4a4152a71bee04d535c7708a9d2ae90b376b44f17b43b4d9e3574b"
+    },
+    {
+      "question_id": 965,
+      "content_sha256": "eb150b5f1cbe27276151e90fb3a3187f7f743e7e9afb4ec06b86c2cfa7ad1382"
+    },
+    {
+      "question_id": 5992,
+      "content_sha256": "e99b72ddd2c70e9a4e0a47974e336dcb8cae536910e42d04811b05c5eb1341e0"
+    },
+    {
+      "question_id": 2778,
+      "content_sha256": "3af26fe7a61e9d6a24670b75cfab1585bb31fe10e69c66fa159fc59fe5aa0a7e"
+    },
+    {
+      "question_id": 6365,
+      "content_sha256": "754fc114afd2ce31fe793f169e01e4bb0275c243feb41b56a179ed1b7198359b"
+    },
+    {
+      "question_id": 2122,
+      "content_sha256": "f5a8c0652ac8a3e93434650223d7ee7bcb08d42ed5fbd0b81b711b85aaa1de97"
+    },
+    {
+      "question_id": 7256,
+      "content_sha256": "0d9062dd4b5822a6744a93f585e7d3810b951a02d2e7cd15bf9553ef54ac6425"
+    },
+    {
+      "question_id": 6374,
+      "content_sha256": "83967d90aaa81324af1caf582af571bf8e198649cbcbedf7751e7139eaeaa6b6"
+    },
+    {
+      "question_id": 5777,
+      "content_sha256": "528bf2f82a6810c1334d1e250ed750ff6cd0c7245d3c82ff0730d6ab8dd13bc3"
+    },
+    {
+      "question_id": 7219,
+      "content_sha256": "16caf25480ea76993a3787b35f3a602500574331c6bb6b9ff51778f384bd850a"
+    },
+    {
+      "question_id": 8399,
+      "content_sha256": "0c0d6a59589a79c1dced9e72efddc1a91d26ad0108b611ea45e41f1534c2cbd6"
+    },
+    {
+      "question_id": 10063,
+      "content_sha256": "bce17fe3ad086cb9ec33b2605c1dec58b3b89f2eeae6a29dd7344dbad811a4fc"
+    },
+    {
+      "question_id": 11676,
+      "content_sha256": "248324694114243474720943ac133c9396466d6eb7875d42d996ec11b04ce74e"
+    },
+    {
+      "question_id": 12866,
+      "content_sha256": "8198d2d33e5cbb36f981bb6d26c8b7ca1e6f06d1af73b04c10ac96009edfcf60"
+    },
+    {
+      "question_id": 6826,
+      "content_sha256": "0a931d2c7dcc8ef0417abdd90196044c99d46dfe923663d9a542c4329fe6b31a"
+    },
+    {
+      "question_id": 4324,
+      "content_sha256": "9ad20e811d805b4051de3c0fc7bcf2bd4cc0bc92ec5eab55a879271bd978188d"
+    },
+    {
+      "question_id": 10694,
+      "content_sha256": "364834e0bbd80eb9df4b36b74d5513fc6dcc4d905958c87bb974ef784f4ef290"
+    },
+    {
+      "question_id": 13684,
+      "content_sha256": "9967fc85d075d9359463040edeb06d17aa80806fa49944a4fa81cc5361d7eed7"
+    },
+    {
+      "question_id": 7132,
+      "content_sha256": "790330893ca0429782e744047f9d42f629c3df230e879c3841db37dca063a836"
+    },
+    {
+      "question_id": 13594,
+      "content_sha256": "40e75a9f7da0d84ce981297378e00475272e8827757619ba57feac32e870e278"
+    },
+    {
+      "question_id": 11160,
+      "content_sha256": "f131100bc560c2cadeadb6628b27684f4f2544538069a35985240a120101d1ca"
+    },
+    {
+      "question_id": 12690,
+      "content_sha256": "8ff44df44a481f2523d4d253087cfc62e6cb512536f189780ffaa67a68fa805f"
+    },
+    {
+      "question_id": 7285,
+      "content_sha256": "76f12c3bc2c59231dab962a7720291e19e628e3eda8228f9d6dfac42fc3a4e94"
+    },
+    {
+      "question_id": 12839,
+      "content_sha256": "582fdce8dee80f5a054d1455f2399e18e412f31b02526143749be9ae2633ff50"
+    },
+    {
+      "question_id": 8453,
+      "content_sha256": "453c8b559af6889db272ad78b1dfdf9ea029236b2dd40f54e22ab4a887f0a200"
+    },
+    {
+      "question_id": 2171,
+      "content_sha256": "55e7fc8df0777fcfc89dc477d7953e27e657fbf01ca862a1195d0728896b3ec1"
+    },
+    {
+      "question_id": 529,
+      "content_sha256": "2eb85bc11d5822918ee41883740bd8dff4c03e8a9aadd581f65321782074da83"
+    },
+    {
+      "question_id": 4670,
+      "content_sha256": "7445cffa066c14418e8512a543220635de2d4d16384d39777f3817d899b9e644"
+    },
+    {
+      "question_id": 5136,
+      "content_sha256": "003327c7d662b7f3d77c5197ae13f5efdd20acd27fc1723fb3078209ad53fbea"
+    },
+    {
+      "question_id": 12560,
+      "content_sha256": "b3ec4bb9180cbea0ab52280a51f446c1973c8398bf6b24594e1f7e60169a15f6"
+    },
+    {
+      "question_id": 6997,
+      "content_sha256": "204c80a1b8ae4d4349e8baa07e87422df57b0797e0780fc302eeee5cf337e3e8"
+    },
+    {
+      "question_id": 9183,
+      "content_sha256": "8bfc75248a1f32f7e14b7829510eec31ab0e2c1796f96710d2f66cde140146cf"
+    },
+    {
+      "question_id": 7492,
+      "content_sha256": "2927c0b26f7c0e0365032ddc3471f451b63a3e4bd8b2733f7ee5480cbe12ffa7"
+    },
+    {
+      "question_id": 12097,
+      "content_sha256": "c5d7c4389edb1a7e0d3724e26728c136e3fabf00f20d7011fdba058abe62dd65"
+    },
+    {
+      "question_id": 6755,
+      "content_sha256": "5d992c0fc1c04c92d1ef6bedef97c08c18d9c2083aa6993e4e6103d653b6bf56"
+    },
+    {
+      "question_id": 2775,
+      "content_sha256": "4e3c355028b23d28394f30f27f916de334fec7414578fcbd8ec6515304971377"
+    },
+    {
+      "question_id": 4922,
+      "content_sha256": "f143f6236cce3014c5b527ac5aa25cbc7f59b07e1950d81ad72c299cbd0cf410"
+    },
+    {
+      "question_id": 11125,
+      "content_sha256": "1a5667fe503a0767b2ef31c45ef41318ebe106e3c2fc92f9c97c432b7c478b80"
+    },
+    {
+      "question_id": 3743,
+      "content_sha256": "bcabf2dc4877bf087fb004d76fc4ea8abd0473371ae5a81d596d71422d02ff54"
+    },
+    {
+      "question_id": 1362,
+      "content_sha256": "3705109ade83e59aff374a3edd85ce38e8f00844ddaa3e17ba9d4688b566d915"
+    },
+    {
+      "question_id": 14880,
+      "content_sha256": "e1424bb4839d7d450b23e8e6d22d57a17fb0ea190d10326cf0adab91063e9eb1"
+    },
+    {
+      "question_id": 14068,
+      "content_sha256": "d1c6e73880ad70bf9edeb1b8021b1d20a2c69bc9fa97eeec2ee9b1bcb99756b4"
+    },
+    {
+      "question_id": 6667,
+      "content_sha256": "cfc09cdd0c72e9dcd263e6af76b67b8a6915df5c2c8d733f4a973f1c19490f79"
+    },
+    {
+      "question_id": 2343,
+      "content_sha256": "ed97177af50ce34896cac240125fad45c7d6ef286e043f349cebc7e67b340785"
+    },
+    {
+      "question_id": 3498,
+      "content_sha256": "661beae75158ed1fed63521795a810f0624631094ba713042ed1bb480135b230"
+    },
+    {
+      "question_id": 1843,
+      "content_sha256": "d90b2aa91b353aa2d0975798ab7dd8692a53d02bc64f91def85a04035990e454"
+    },
+    {
+      "question_id": 7068,
+      "content_sha256": "fda8c077e10a1e7bb8cfe7f643a5b9eac29ced007733ed810f7a153bf0e6cde2"
+    },
+    {
+      "question_id": 5433,
+      "content_sha256": "3846d38708c5790724561817e7bc7a4284b4194401f8af9e7375ca5ca054278e"
+    },
+    {
+      "question_id": 2908,
+      "content_sha256": "af33bb8352140e842cd40317810d505a623a9725606a779bd8b2489e09677e3b"
+    },
+    {
+      "question_id": 9655,
+      "content_sha256": "2a8fa9937f9b4c704f722c8abfb2e61067a5958199f0d4794a1b8329b0fe751a"
+    },
+    {
+      "question_id": 2274,
+      "content_sha256": "9f706a4a628a80d3eac8d958784581c9b43b64d93547cbede06717b683728f0a"
+    },
+    {
+      "question_id": 11755,
+      "content_sha256": "abb697bf4b2697f111e859fe799aaed3583e9d517834cb8d063e08c6f7d22489"
+    },
+    {
+      "question_id": 3678,
+      "content_sha256": "22d51e4ffb9e62bd4d3938e9785a8e047c7b9ed1e84e0cbe70d337884783d701"
+    },
+    {
+      "question_id": 1621,
+      "content_sha256": "a55a02587a2103c0658ec9b3ca00765c1b929fc7478e45bf2482c876303bae3a"
+    },
+    {
+      "question_id": 14381,
+      "content_sha256": "7adfc05997f52cf073a3eed6792dc5222b0d510b23924c0e0a9f2f1aaa1e99a6"
+    },
+    {
+      "question_id": 1239,
+      "content_sha256": "3d7b3338dfbfa0fda93c428c7eaa056ba1c6d6255d9caab5204c9cc20536dbee"
+    },
+    {
+      "question_id": 2976,
+      "content_sha256": "b9de2905c1cea41f86a7a93a627eaa7c2e86366337967aef78f3e0523200fd9d"
+    },
+    {
+      "question_id": 25,
+      "content_sha256": "c6d711cbf3e50a93ba707d1f35ae6291fbb18f0a8faccc28210d7dc9c546b631"
+    },
+    {
+      "question_id": 4950,
+      "content_sha256": "9bebbd17ba69ceb9f3ce5da4690d3b2c007baeafa1b4ae304e2c3da2d08d9ce8"
+    },
+    {
+      "question_id": 14752,
+      "content_sha256": "4489278ca480f204f01f78c1a1b1907a35c684ce40de7be1f863fda156b9d476"
+    },
+    {
+      "question_id": 2894,
+      "content_sha256": "61e874d010632c01d95f6daf866cfc47cf58d6d59534d49c123da597351e175c"
+    },
+    {
+      "question_id": 7771,
+      "content_sha256": "aac717e0fb4b748e9966b43b3da21ebc52fa11224446ce77d505c6b7807003c1"
+    },
+    {
+      "question_id": 7727,
+      "content_sha256": "61dee5259bcaf6a6a5d95c2d35544e2a28b64f0c01cbfce79aef7f7ba3ca2a7b"
+    },
+    {
+      "question_id": 2554,
+      "content_sha256": "2e746536fb9217436093d0e6ea83ad5032662bad869ff94ac2db3a21282410fc"
+    },
+    {
+      "question_id": 11055,
+      "content_sha256": "c4fcb40666715a8fc48ede052e1df53829dc3b9e08fb3bda41cb7f0bd3641b74"
+    },
+    {
+      "question_id": 5740,
+      "content_sha256": "50e40343f8044b33970a3deb1d45c5b4418bbe3ecad405f850b7be15d322e9a2"
+    },
+    {
+      "question_id": 9887,
+      "content_sha256": "c4c6865428a0bde43a53ced68acdad5c755774f35c5dd260dfddb2e2fafa1941"
+    },
+    {
+      "question_id": 7324,
+      "content_sha256": "a5ac046bcf811113083937222df4125da83a088ee54c2184d4d163a70983bd19"
+    },
+    {
+      "question_id": 5075,
+      "content_sha256": "82d6cf70a8fe215915eabd51e13e73724626674047a6148907cc48c81f4a181d"
+    },
+    {
+      "question_id": 14166,
+      "content_sha256": "92ce0de3176e22b0b2d6531eb6997e9122f58fddf9a6a4c610ae65ca3025b47f"
+    },
+    {
+      "question_id": 14573,
+      "content_sha256": "046920dcc504629ae7e455cf5e76ad8c287a44f974fc3a1dc11c08d84e0d17ab"
+    },
+    {
+      "question_id": 13092,
+      "content_sha256": "a127a96a46f54b7b1ef1722dee2a115c760eddd2da904ee6e19deea69f13bb69"
+    },
+    {
+      "question_id": 10705,
+      "content_sha256": "c76b92e9c25e7ecb8f4ca29c546a6e9cecc2986d18ca63971a92ae3a956b9ad2"
+    },
+    {
+      "question_id": 10601,
+      "content_sha256": "cb9addf73dced0c83579decf18846cf9b6fe1e1d4ab04ed4cc014caa35b4de96"
+    },
+    {
+      "question_id": 13451,
+      "content_sha256": "67f83a2f74965f3c5e879f862af1e939f6f9d0e4557951b649a0c46f11ef683d"
+    },
+    {
+      "question_id": 6964,
+      "content_sha256": "3c9b43f089c5d15c3f753d9bf56c5f9240028e68581b8bd37392ef5bf088dd41"
+    },
+    {
+      "question_id": 10262,
+      "content_sha256": "d30fe646c44added513ea1eba85a009a52bf029daf08f7fb30ee1ed4bcdf7fdd"
+    },
+    {
+      "question_id": 9281,
+      "content_sha256": "5e91a02050f9a4dba35950904ed821c3e3ee2fa51165d111b72952c85c6efc87"
+    },
+    {
+      "question_id": 4358,
+      "content_sha256": "1a2e999512604f05cc87a50233d180b17eb042ed3ae536e4aa3e1236aab1fed7"
+    },
+    {
+      "question_id": 28,
+      "content_sha256": "4e3b667ebbe245fa3ed2090728b484a488714cd5189f0d2ba8f4f632fca858ba"
+    },
+    {
+      "question_id": 12784,
+      "content_sha256": "bc1067290bc4df5a5c5dec7b777224fb2373772af4cc71ebdd0a2ba7a6551e4d"
+    },
+    {
+      "question_id": 14167,
+      "content_sha256": "2a56a4e4b696d25e5ae682b6fc6ff347c406b64015c067a1cf66ea372a822dc7"
+    },
+    {
+      "question_id": 2000,
+      "content_sha256": "7df82710c51753169de3fc0ffa2c28d2640577f34c410bd1daf55f05bf1dd4c3"
+    },
+    {
+      "question_id": 7514,
+      "content_sha256": "81d06229f3971c87608909cc8083caae7cbf643901d9eb2ea3c3a2747b5f8373"
+    },
+    {
+      "question_id": 10935,
+      "content_sha256": "4a4d5e56a95595e2ba8d7fdb9a7de3b9c2f6bfe69936c2a4256dd95d4db62564"
+    },
+    {
+      "question_id": 13252,
+      "content_sha256": "a7bc21040b2c8c05cfc2c191a638e949c65f1cc170ea626ec461f558d80df2c9"
+    },
+    {
+      "question_id": 2230,
+      "content_sha256": "21ce3d331a2da05daf09d36d571d632f86a1cdc300e0a18c1aad63ee75e936e5"
+    },
+    {
+      "question_id": 1497,
+      "content_sha256": "2b10c5efea22f9e8592cae2cb21e9ce5ce8b28e126379c622bcc35359245b89b"
+    },
+    {
+      "question_id": 5513,
+      "content_sha256": "422a3ceca141313b88af5e88ace296db4a166f38a3fab6e9c388965ae247ef5f"
+    },
+    {
+      "question_id": 8538,
+      "content_sha256": "22ed3cf1a3f86e061e18031bbc3f3a52b53f17c4adc6114cb95e73ccf26bbfd9"
+    },
+    {
+      "question_id": 3674,
+      "content_sha256": "192672dbd324b92b6e7b432146a23d6c256995b1bb79447910381954a3fe4777"
+    },
+    {
+      "question_id": 4396,
+      "content_sha256": "ccfaee27d1289153718c8b6e1fa39252eeb8be825f89600f1df12671d6f12724"
+    },
+    {
+      "question_id": 834,
+      "content_sha256": "179547b7f1619de02cc0c7b8333a9ab40dbbd0c6580387c6166267aeeec393a8"
+    },
+    {
+      "question_id": 9734,
+      "content_sha256": "d7fa4248bd5348f9504c28e689557de38b9ac6ea960fbc9e117e3e6e676c6bee"
+    },
+    {
+      "question_id": 4508,
+      "content_sha256": "a33a9c480899977ee1ef7b0eb2857cc77ff885e3d159ea1a2ec9a84d65459027"
+    },
+    {
+      "question_id": 4291,
+      "content_sha256": "95958090bc5420c6a6a7f533104f14cf94a4ea66937724e82b40de2e1e0ad619"
+    },
+    {
+      "question_id": 4149,
+      "content_sha256": "1f9b1c0939e2e6be09c8b3dc45e9e9daed5822ca357889a9a5cdffc106323522"
+    },
+    {
+      "question_id": 11278,
+      "content_sha256": "484c73d49827435417e0a91382ef8741a118fea6ef52cb4b0ec60d3278c32e31"
+    },
+    {
+      "question_id": 10689,
+      "content_sha256": "044ff2b6806ff0f59e0679119baee0c8af7e2675a07a65bb780249c96c09e486"
+    },
+    {
+      "question_id": 7435,
+      "content_sha256": "cc4cfb3e42291c5e307e4982a12b27fd5b3dd2d0d530d70482449facc94dee69"
+    },
+    {
+      "question_id": 962,
+      "content_sha256": "b7ea72ab26284898768a1a87948d3b46d27eab462f45b203a4c996b0aa3b3c77"
+    },
+    {
+      "question_id": 14027,
+      "content_sha256": "253d95e12b8fdf1da2e2725e31204c52b3f168af4ed99772c7abc57b5c7f502c"
+    },
+    {
+      "question_id": 1672,
+      "content_sha256": "6ae23ef395b40dc33ece48c17e57c0a2b3a6b729e51542ee2784cd3045dd7204"
+    },
+    {
+      "question_id": 10781,
+      "content_sha256": "fb9ebc67403596485937dabeeab530990e356f24da8c07431a8fd07645d66290"
+    },
+    {
+      "question_id": 14222,
+      "content_sha256": "298da1fcd5bc60cd1ebcae6e683f15d6d7693681ebc15085d43a33322ab50ac3"
+    },
+    {
+      "question_id": 5192,
+      "content_sha256": "cb861775e7fd156d5f98a1e43c154ecaba511b3e8cb29ded24741b6e9e4554ef"
+    },
+    {
+      "question_id": 10914,
+      "content_sha256": "4bfc36609d0fff6c28569c07ad989617290497d90451ac3a258862b9733b3240"
+    },
+    {
+      "question_id": 13571,
+      "content_sha256": "6cbd621588db5251c6f8fd0d41a83a708e7b6b02d2936084de612d5827d7c54a"
+    },
+    {
+      "question_id": 10660,
+      "content_sha256": "b66065a0d0b99887c3035c1390979c66abd9ae1a26e8d261fff9c21ec7d3aa1b"
+    },
+    {
+      "question_id": 8632,
+      "content_sha256": "b5472d77020b99db6ffd82a61bffbb8181e98017b2b047628694c588cc4a159c"
+    },
+    {
+      "question_id": 14850,
+      "content_sha256": "f6dc2c829206699f5cd165e78cc6a2506fb43e2ca1debf84a967024378bc1c97"
+    },
+    {
+      "question_id": 7363,
+      "content_sha256": "6fcd0a2569b8b2db1de9f85519860e5b6bb3f878946a4466ce1fea433760057a"
+    },
+    {
+      "question_id": 8462,
+      "content_sha256": "1eabb82281add5d18cd4ca2f6f80c18906da79b0d45ff3c0474a6d4b60477095"
+    },
+    {
+      "question_id": 3836,
+      "content_sha256": "b58d2dd3adba87e8d26a63477eeb9d053da42d88b4f3744b89d6f169724fd2d0"
+    },
+    {
+      "question_id": 4912,
+      "content_sha256": "a9f818f52fce73975a533e4c11f13341a9c21b774b24cdcf7dbe5451ee71490e"
+    },
+    {
+      "question_id": 4373,
+      "content_sha256": "ecd9b47a03c7166d3981752745f220541acdeb8501d3af2a981dc72d1e733db3"
+    },
+    {
+      "question_id": 15043,
+      "content_sha256": "9d2fe5ba7828a6f79b8f6cc2320c2039a70b148f70cfc477904c2e7cab64c20c"
+    },
+    {
+      "question_id": 11099,
+      "content_sha256": "95f83d2a70b1d848d3948e990a0e0b15b390f7298f9f10adc98f24d8426b64c8"
+    },
+    {
+      "question_id": 14714,
+      "content_sha256": "7c244ea2c8ad5afbcec5f559d7b227f856bc94969376cb2ae77db00268742db4"
+    },
+    {
+      "question_id": 12262,
+      "content_sha256": "0c5240dc40deeb2fdc59339ea5bc3d3b50e3fd40d425bf1c2bff35f220ca1f6e"
+    },
+    {
+      "question_id": 9802,
+      "content_sha256": "d9b8b0d64ff318ea74b9b6376a49f45884aa20108ae41c2e27f45b0917f87e16"
+    },
+    {
+      "question_id": 10617,
+      "content_sha256": "17083693ad33596242a6acc8bb87ec51fe2b34c0d48f7f89e20c13a82fbc5e1f"
+    },
+    {
+      "question_id": 12141,
+      "content_sha256": "c03052e77789ea41f4b461264c90e406cf50b9893856a1df23323a5feb9e59bb"
+    },
+    {
+      "question_id": 15,
+      "content_sha256": "1259b0943d025e589eb40cd8d109a9a325e754e61d666c88b28dbe4ab12d72ab"
+    },
+    {
+      "question_id": 7354,
+      "content_sha256": "7dcc93d4c870fbb142f6e2d423e95a0e70a41e41c8ba56559f19072067868070"
+    },
+    {
+      "question_id": 12005,
+      "content_sha256": "54c67b8497363c81af883d3770b3086839b8baf98d51752a7a7ee0c770b9d7f4"
+    },
+    {
+      "question_id": 8535,
+      "content_sha256": "ac6a574c065f78df69b67430d47a737b3e00e6cb54fc52582be7cbaa70801daa"
+    },
+    {
+      "question_id": 633,
+      "content_sha256": "282bea9999d4a17bea2c0db845efc2e0507695e633b9d5a57865d7d83aa10af0"
+    },
+    {
+      "question_id": 3825,
+      "content_sha256": "9381f09a4c0f9531bd59a8343f430d28e654ba97312606330703a89c34d5433d"
+    },
+    {
+      "question_id": 2438,
+      "content_sha256": "1f2974c70a1c4713c9380671348b3302b2c2bc30c931e8f1a608f61f521d51f9"
+    },
+    {
+      "question_id": 6540,
+      "content_sha256": "e685e60147706cfaf77776274de80c5af0d0e2ddb675ab9e67d0c3ab8f8df535"
+    },
+    {
+      "question_id": 7798,
+      "content_sha256": "9b368c6bcf3085a3cd310e78a9981e815c99e58407013ff92dff7d07bdcc0bd4"
+    },
+    {
+      "question_id": 13034,
+      "content_sha256": "d0b4db1b03e81054873cdf8e9adb72af0ea035067d34ec66b5641e02662aaeae"
+    },
+    {
+      "question_id": 497,
+      "content_sha256": "38aace32727791bd32afda4b69e710ab41c7683065a5bad9181ef75a50f2cc8d"
+    },
+    {
+      "question_id": 10625,
+      "content_sha256": "8bacf97a234fedd6cc70c4ad1f63e998acd758c98c77079f566a08bca4d5f3b8"
+    },
+    {
+      "question_id": 623,
+      "content_sha256": "a16cf5d120806e4aff129002d1f6ccc15d952f21e57bca953646f2f3ed740e04"
+    },
+    {
+      "question_id": 3466,
+      "content_sha256": "214cec2cc14b0931b7413f52a4babd11b4a39162b1d83dfef03d08870f8cdf25"
+    },
+    {
+      "question_id": 12828,
+      "content_sha256": "b2280f333192651891f0229b919e8587a9529476495413942e28decddd943bf6"
+    },
+    {
+      "question_id": 6791,
+      "content_sha256": "90f11b6b8026cbbc1e534619e1dd21a180df68a26a786d366845be7325ea23cf"
+    },
+    {
+      "question_id": 7302,
+      "content_sha256": "adb3095445bb1e0a1c26a5a719f909b7066b986b23f65af78b3850a6fd67f9db"
+    },
+    {
+      "question_id": 6686,
+      "content_sha256": "f751073de990cfb75de0f7459273c3fe3a7d00049d11fb37f0852530ac936386"
+    },
+    {
+      "question_id": 2042,
+      "content_sha256": "b638e643c239b0dde6f43c6753ec9afee4124b3efb32f803e18440ebd39fdb96"
+    },
+    {
+      "question_id": 12054,
+      "content_sha256": "4090e86d9fbfadb6ac5f620f120b5c29d3f8143874f8be9a5fe501eeba0a9d52"
+    },
+    {
+      "question_id": 1539,
+      "content_sha256": "028b76116ce38813641656b810efa596e80cbf2aae5258702b9502fa2cd263a1"
+    },
+    {
+      "question_id": 10584,
+      "content_sha256": "e865209459aa17857a5b43027e170c15335e91414c13e613a83fb40743c0a8c4"
+    },
+    {
+      "question_id": 4402,
+      "content_sha256": "e316cd75e933898034a89561013a160d0daa078180ffbd503d4a945459e6eef2"
+    },
+    {
+      "question_id": 6674,
+      "content_sha256": "d346a92df4b0bf53bc220c907f74b52ac7248ffad6b0616ebc1cf90344ef6439"
+    },
+    {
+      "question_id": 3940,
+      "content_sha256": "24f9754967721f325256f7c0708c68b277696208e1d83b9f3d5b57c3e3fb763f"
+    },
+    {
+      "question_id": 5829,
+      "content_sha256": "8c08c0cc2b6c2a392dfe222c04e4b53d82ac804a6a4ebecff8b3846d88b8bbf0"
+    },
+    {
+      "question_id": 4809,
+      "content_sha256": "3fdf1d4f13184b14da91894f507b2828b8b15411799399b38e309704428b86bc"
+    },
+    {
+      "question_id": 1129,
+      "content_sha256": "97a2b5a0815aba6391f78d387c9810eaea340376b9f0bae8a1038e9aba3b4bd3"
+    },
+    {
+      "question_id": 5903,
+      "content_sha256": "6f7595e5d5025aa15bf45d4f20283ad7dd53f08ce19052ac0cbaf480325ebab9"
+    },
+    {
+      "question_id": 10203,
+      "content_sha256": "796529fefafafa566bc46d81bde3a91d57df8864bff2b9c3d9a9128deacd4c6e"
+    },
+    {
+      "question_id": 9496,
+      "content_sha256": "97cb95d66bb421ca46456ae224c2e42470117e9d5dda72d75440985ed35b5b1d"
+    },
+    {
+      "question_id": 2325,
+      "content_sha256": "43f97f5767c839e016a71ab9332c134472494c4bec4ab57343ce57c55e124d17"
+    },
+    {
+      "question_id": 10883,
+      "content_sha256": "d0c095ec1ed309d939728254ac6bd8eb32dd3341a30269d361a20dba3fc6be2d"
+    },
+    {
+      "question_id": 10964,
+      "content_sha256": "079db3e23ea12dab7690c3753460077e5d377e9dd113d7a0305bd7150c8ce73e"
+    },
+    {
+      "question_id": 13723,
+      "content_sha256": "03672cb032de1d6258462e5e1f212b631109ff6df018fd192e6d63a7083aea40"
+    },
+    {
+      "question_id": 6343,
+      "content_sha256": "6306d4da928a95d08eb183e07f200e1c6b8042eb3d04ffb54ac6f1a21287ab1e"
+    },
+    {
+      "question_id": 14215,
+      "content_sha256": "e48ade2cf47d43d2ade420f29716f256c2d3e97681f5ffda80947dee492ccd73"
+    },
+    {
+      "question_id": 6147,
+      "content_sha256": "fb2afc6f5afe202c6a8a1035081e3694db29d44ebeae0be306eb3ecdf030346d"
+    },
+    {
+      "question_id": 2026,
+      "content_sha256": "092a99b6f6c2b4e197cc2b1feac5a5d68082681c1db7febcbc82d9d62af7c881"
+    },
+    {
+      "question_id": 1936,
+      "content_sha256": "f021e484a0ef18f397623886d2c18d9f32dd08bd99d0264cb120068697ecaece"
+    },
+    {
+      "question_id": 6409,
+      "content_sha256": "0d07e6cbb3f7bdf9af487c5b3daba930a249add1258d03fc43b66d8d4a89e120"
+    },
+    {
+      "question_id": 15019,
+      "content_sha256": "c8892af98e23bde3478ac9e4fdfe811edc7bc9e57362f4037f7f9acbdc32b772"
+    },
+    {
+      "question_id": 12667,
+      "content_sha256": "3342a6d930fd1f6792ec05ae91a94b3b399a084c46dccc98fe3ddeb0e0dd6df1"
+    },
+    {
+      "question_id": 5227,
+      "content_sha256": "a1e957cacb1048183b8dcaed3f5f4a60a1be08f643ca022c0eca0ab04d8b868b"
+    },
+    {
+      "question_id": 3360,
+      "content_sha256": "4df6d93a65cedc8e3a228819501f73d6c900151814e04f6b92381263e80bfd4b"
+    },
+    {
+      "question_id": 10697,
+      "content_sha256": "0c9a540d1027678f343b7d2153c2966b9c615f8cd4c487b594262ba51bf408e6"
+    },
+    {
+      "question_id": 6148,
+      "content_sha256": "8dc521906f754556d182a53f8d5a5325e1b808b4b92d6cd1bb336987d3c212c3"
+    },
+    {
+      "question_id": 10916,
+      "content_sha256": "b9cd9ef06510452b90dc161cd3f5712044448814901e9204deeba9fc299115a0"
+    },
+    {
+      "question_id": 1784,
+      "content_sha256": "dc0fc7fb357cba8c5678b2e94390f101b5da8dd43dd2d8f2f5b5e9c7b002662b"
+    },
+    {
+      "question_id": 10681,
+      "content_sha256": "070ed96d3500830f594ee3f2d291ee010a8e7f7faf2290ba55646ee517977bed"
+    },
+    {
+      "question_id": 3789,
+      "content_sha256": "6e73f1507ac947954d5a24e2c4ae8010245d31cc795c1597977228afaeac21eb"
+    },
+    {
+      "question_id": 8536,
+      "content_sha256": "e29a9f22bc0f918c0ff3d607ad792965ea92b152c066e14db3a0f08deb467a7c"
+    },
+    {
+      "question_id": 7462,
+      "content_sha256": "ea4f5f7f7f95a57ddfcb26ed8a16b442ca5dc7dff6bb290739de057d71b0486e"
+    },
+    {
+      "question_id": 12783,
+      "content_sha256": "1f8bc90b860a4d2381f1ba07609d99b637b6ae3045101c2e7e69438a807050cf"
+    },
+    {
+      "question_id": 2866,
+      "content_sha256": "f7260d2e31b550c60fc3410b2b458d0f1d3c034aba4f31866a65894eb67da183"
+    },
+    {
+      "question_id": 3663,
+      "content_sha256": "bf9026f69ebef24ea4ef43f05f74e8a7404d166282c51c494d5ff3a71eb2fe70"
+    },
+    {
+      "question_id": 9340,
+      "content_sha256": "88ffc3bde9b07dde5304fb123140aa9da342c4731cf8c3efd3db1e38af495019"
+    },
+    {
+      "question_id": 3021,
+      "content_sha256": "7210525ec9e6136bd01960d684e0a1a99712576caaeae8694477db111e173908"
+    },
+    {
+      "question_id": 4553,
+      "content_sha256": "ebad8e48dfea724907eba4aa1130c4031235a9037cc725d58c1567fe6ea49972"
+    },
+    {
+      "question_id": 7031,
+      "content_sha256": "7a98a3eba6869567b82850670fd8a3de3679d03feb8d3ca39b0b7f32caeb2fcc"
+    },
+    {
+      "question_id": 14259,
+      "content_sha256": "063cd65b157504c85885947a267f6dd1a37c90b6275765fdc924947430cb0a2b"
+    },
+    {
+      "question_id": 14840,
+      "content_sha256": "d4e23c4c25e21daae772743a151607e9f2d0ce28adb332e88c76ba51de7faa04"
+    },
+    {
+      "question_id": 12641,
+      "content_sha256": "ca2c754cc9da72fddc753ca8dadad0aa3dd0f20e237a00a327e49a547ae68995"
+    },
+    {
+      "question_id": 14721,
+      "content_sha256": "9e7067942f92ee88751b49af06148c9e03f02e9ce63cf5235af73816317077a3"
+    },
+    {
+      "question_id": 8904,
+      "content_sha256": "83238005f1f113d418120e6a0a2aab7b6a3a0d987509cc31d9d266f18bc34c04"
+    },
+    {
+      "question_id": 1706,
+      "content_sha256": "0b1fe6bba81a3f5f378da0f15949712f3ac0404d786fdea139719547c78a91dc"
+    },
+    {
+      "question_id": 8451,
+      "content_sha256": "a17ca3fd8730f58dd80973e6efb516e3413f3e6a0f255b13d0d6076f42f70185"
+    },
+    {
+      "question_id": 7470,
+      "content_sha256": "5eb846fcd5cb7df1f1371cdcf203a3faa2aecfe7aa7c6af1154dd2f623690405"
+    },
+    {
+      "question_id": 10876,
+      "content_sha256": "a120cfbd7ca74e048a1832d21b5f29084cb60c508ca1e303ad89b1cec8018673"
+    },
+    {
+      "question_id": 9597,
+      "content_sha256": "5cb555e61b8378ff5c14d9c4b5b19e5f3638be98d440c8ebe41a2a23fd9fe470"
+    }
+  ]
+}

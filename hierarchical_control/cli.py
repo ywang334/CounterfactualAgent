@@ -15,6 +15,10 @@ from .evaluator import ExactMatchEvaluator, MockEvaluator
 from .graph import build_workflow
 from .io_utils import read_jsonl, update_metrics, write_jsonl
 from .logiqa_audit import run_logiqa_audit
+from .logiqa_action_collection import (
+    load_action_collection_settings,
+    run_logiqa_action_collection,
+)
 from .logiqa_pilot import run_logiqa_pilot
 from .logiqa_policy_validation import (
     load_validation_settings,
@@ -201,6 +205,27 @@ def command_validate_logiqa_policies(args: argparse.Namespace) -> dict[str, Any]
         pilot_predictions=args.pilot_predictions,
         output_dir=args.output_dir,
         backend=backend,
+    )
+
+
+def command_collect_logiqa_action_rollouts(
+    args: argparse.Namespace,
+) -> dict[str, Any]:
+    settings = load_action_collection_settings()
+    api_key = args.api_key or os.environ.get("OPENAI_API_KEY") or "local"
+    backend = OpenAIBackend(
+        base_url=settings.base_url,
+        api_key=api_key,
+        model=settings.model,
+        temperature=settings.temperature,
+        timeout=args.timeout,
+        extra_body=settings.extra_body,
+    )
+    return run_logiqa_action_collection(
+        data_path=args.data_path,
+        output_dir=args.output_dir,
+        backend=backend,
+        settings=settings,
     )
 
 
@@ -456,6 +481,16 @@ def build_parser() -> argparse.ArgumentParser:
     validation.add_argument("--api-key")
     validation.add_argument("--timeout", type=float, default=120.0)
     validation.set_defaults(handler=command_validate_logiqa_policies)
+
+    action_rollouts = subparsers.add_parser("collect-logiqa-action-rollouts")
+    action_rollouts.add_argument("--data-path", required=True)
+    action_rollouts.add_argument(
+        "--output-dir",
+        default="artifacts/logiqa_action_collection_200",
+    )
+    action_rollouts.add_argument("--api-key")
+    action_rollouts.add_argument("--timeout", type=float, default=120.0)
+    action_rollouts.set_defaults(handler=command_collect_logiqa_action_rollouts)
     return parser
 
 
