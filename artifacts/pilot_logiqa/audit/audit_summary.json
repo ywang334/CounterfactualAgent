@@ -1,0 +1,458 @@
+{
+  "offline_audit": true,
+  "source_predictions": "/data/wy/agent/CounterfactualAgent/artifacts/pilot_logiqa/predictions.jsonl",
+  "samples": 50,
+  "source_mock_only": false,
+  "strict": {
+    "solver_only": {
+      "correct": 33,
+      "accuracy": 0.66,
+      "parse_failures": 6,
+      "parse_failure_ids": [
+        5027,
+        11202,
+        8685,
+        1522,
+        4219,
+        2941
+      ],
+      "format_compliant": 44,
+      "format_compliance_rate": 0.88
+    },
+    "full": {
+      "correct": 26,
+      "accuracy": 0.52,
+      "parse_failures": 6,
+      "parse_failure_ids": [
+        5027,
+        11202,
+        8685,
+        1522,
+        4219,
+        2941
+      ],
+      "format_compliant": 44,
+      "format_compliance_rate": 0.88
+    },
+    "transitions": {
+      "correct_to_correct": {
+        "count": 22,
+        "sample_ids": [
+          2745,
+          11656,
+          7475,
+          11625,
+          3197,
+          14198,
+          7261,
+          5181,
+          6581,
+          11618,
+          13351,
+          12776,
+          11674,
+          11484,
+          2221,
+          10680,
+          1391,
+          7564,
+          10985,
+          12476,
+          2900,
+          1062
+        ]
+      },
+      "correct_to_wrong": {
+        "count": 11,
+        "sample_ids": [
+          8898,
+          13622,
+          6137,
+          7776,
+          10583,
+          14532,
+          6643,
+          14352,
+          1222,
+          1444,
+          6773
+        ]
+      },
+      "wrong_to_correct": {
+        "count": 4,
+        "sample_ids": [
+          2288,
+          7040,
+          11554,
+          7450
+        ]
+      },
+      "wrong_to_wrong": {
+        "count": 13,
+        "sample_ids": [
+          6310,
+          3417,
+          5027,
+          3541,
+          2586,
+          8844,
+          2767,
+          11202,
+          8685,
+          1522,
+          486,
+          4219,
+          2941
+        ]
+      }
+    },
+    "corrected_ids": [
+      2288,
+      7040,
+      11554,
+      7450
+    ],
+    "degraded_ids": [
+      8898,
+      13622,
+      6137,
+      7776,
+      10583,
+      14532,
+      6643,
+      14352,
+      1222,
+      1444,
+      6773
+    ],
+    "unchanged_ids": [
+      2745,
+      11656,
+      7475,
+      11625,
+      3197,
+      14198,
+      7261,
+      5181,
+      6581,
+      11618,
+      13351,
+      12776,
+      11674,
+      11484,
+      2221,
+      10680,
+      1391,
+      7564,
+      10985,
+      12476,
+      2900,
+      1062,
+      6310,
+      3417,
+      5027,
+      3541,
+      2586,
+      8844,
+      2767,
+      11202,
+      8685,
+      1522,
+      486,
+      4219,
+      2941
+    ]
+  },
+  "tolerant": {
+    "solver_only": {
+      "correct": 37,
+      "accuracy": 0.74,
+      "parse_failures": 0,
+      "parse_failure_ids": [],
+      "format_compliant": 50,
+      "format_compliance_rate": 1.0
+    },
+    "full": {
+      "correct": 27,
+      "accuracy": 0.54,
+      "parse_failures": 0,
+      "parse_failure_ids": [],
+      "format_compliant": 50,
+      "format_compliance_rate": 1.0
+    },
+    "transitions": {
+      "correct_to_correct": {
+        "count": 23,
+        "sample_ids": [
+          2745,
+          11656,
+          7475,
+          11625,
+          3197,
+          14198,
+          7261,
+          5181,
+          6581,
+          11618,
+          13351,
+          12776,
+          11674,
+          11484,
+          2221,
+          10680,
+          1391,
+          7564,
+          10985,
+          12476,
+          2900,
+          1522,
+          1062
+        ]
+      },
+      "correct_to_wrong": {
+        "count": 14,
+        "sample_ids": [
+          8898,
+          13622,
+          6137,
+          7776,
+          10583,
+          14532,
+          11202,
+          6643,
+          14352,
+          1222,
+          1444,
+          8685,
+          4219,
+          6773
+        ]
+      },
+      "wrong_to_correct": {
+        "count": 4,
+        "sample_ids": [
+          2288,
+          7040,
+          11554,
+          7450
+        ]
+      },
+      "wrong_to_wrong": {
+        "count": 9,
+        "sample_ids": [
+          6310,
+          3417,
+          5027,
+          3541,
+          2586,
+          8844,
+          2767,
+          486,
+          2941
+        ]
+      }
+    },
+    "corrected_ids": [
+      2288,
+      7040,
+      11554,
+      7450
+    ],
+    "degraded_ids": [
+      8898,
+      13622,
+      6137,
+      7776,
+      10583,
+      14532,
+      11202,
+      6643,
+      14352,
+      1222,
+      1444,
+      8685,
+      4219,
+      6773
+    ],
+    "unchanged_ids": [
+      2745,
+      11656,
+      7475,
+      11625,
+      3197,
+      14198,
+      7261,
+      5181,
+      6581,
+      11618,
+      13351,
+      12776,
+      11674,
+      11484,
+      2221,
+      10680,
+      1391,
+      7564,
+      10985,
+      12476,
+      2900,
+      1522,
+      1062,
+      6310,
+      3417,
+      5027,
+      3541,
+      2586,
+      8844,
+      2767,
+      486,
+      2941
+    ]
+  },
+  "format_recovery": {
+    "solver_only_ids": [
+      5027,
+      11202,
+      8685,
+      1522,
+      4219,
+      2941
+    ],
+    "full_ids": [
+      5027,
+      11202,
+      8685,
+      1522,
+      4219,
+      2941
+    ],
+    "any_ids": [
+      5027,
+      11202,
+      8685,
+      1522,
+      4219,
+      2941
+    ],
+    "solver_conflict_ids": [],
+    "full_conflict_ids": []
+  },
+  "mcnemar_exact_tolerant": {
+    "method": "two-sided exact McNemar (conditional binomial)",
+    "correct_to_wrong": 14,
+    "wrong_to_correct": 4,
+    "discordant_pairs": 18,
+    "p_value": 0.0308837890625
+  },
+  "recorded_costs": {
+    "solver_only": {
+      "samples": 50,
+      "total_usage": {
+        "prompt_tokens": 15017,
+        "completion_tokens": 4155,
+        "total_tokens": 19172
+      },
+      "average_usage": {
+        "prompt_tokens": 300.34,
+        "completion_tokens": 83.1,
+        "total_tokens": 383.44
+      },
+      "total_calls": 50,
+      "average_calls": 1.0,
+      "total_latency_seconds": 88.69144247379154,
+      "average_latency_seconds": 1.7738288494758307
+    },
+    "full": {
+      "samples": 50,
+      "total_usage": {
+        "prompt_tokens": 58201,
+        "completion_tokens": 14288,
+        "total_tokens": 72489
+      },
+      "average_usage": {
+        "prompt_tokens": 1164.02,
+        "completion_tokens": 285.76,
+        "total_tokens": 1449.78
+      },
+      "total_calls": 150,
+      "average_calls": 3.0,
+      "total_latency_seconds": 292.31404081499204,
+      "average_latency_seconds": 5.846280816299841
+    }
+  },
+  "posthoc_oracle": {
+    "posthoc_oracle": true,
+    "deployable": false,
+    "warning": "Uses gold outcomes after inference and is not a deployable policy.",
+    "correct": 41,
+    "accuracy": 0.82,
+    "correct_ids": [
+      2745,
+      8898,
+      11656,
+      7475,
+      11625,
+      3197,
+      14198,
+      7261,
+      5181,
+      6581,
+      11618,
+      13622,
+      13351,
+      6137,
+      7776,
+      12776,
+      10583,
+      11674,
+      11484,
+      14532,
+      2288,
+      2221,
+      10680,
+      11202,
+      1391,
+      6643,
+      7040,
+      14352,
+      1222,
+      7564,
+      10985,
+      12476,
+      1444,
+      2900,
+      8685,
+      11554,
+      1522,
+      7450,
+      1062,
+      4219,
+      6773
+    ],
+    "full_usage_count": 4,
+    "full_usage_rate": 0.08,
+    "full_usage_ids": [
+      2288,
+      7040,
+      11554,
+      7450
+    ],
+    "recorded_costs": {
+      "samples": 50,
+      "total_usage": {
+        "prompt_tokens": 18489,
+        "completion_tokens": 5012,
+        "total_tokens": 23501
+      },
+      "average_usage": {
+        "prompt_tokens": 369.78,
+        "completion_tokens": 100.24,
+        "total_tokens": 470.02
+      },
+      "total_calls": 58,
+      "average_calls": 1.16,
+      "total_latency_seconds": 105.71569282258861,
+      "average_latency_seconds": 2.1143138564517723
+    }
+  }
+}

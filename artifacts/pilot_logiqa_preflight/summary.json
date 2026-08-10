@@ -1,0 +1,50 @@
+{
+  "mock_only": false,
+  "data_path": "/tmp/logiqa2-dev.txt",
+  "requested_limit": 1,
+  "samples": 1,
+  "seed": 20260810,
+  "backend": {
+    "base_url": "http://localhost:8000/v1",
+    "model": "localmodel"
+  },
+  "temperature": 0.0,
+  "generation_caps": {
+    "solver": 512,
+    "critic": 512,
+    "refiner": 512
+  },
+  "request_extra_body": {
+    "chat_template_kwargs": {
+      "enable_thinking": false
+    }
+  },
+  "solver_only": {
+    "correct": 1,
+    "accuracy": 1.0,
+    "parse_failures": 0,
+    "average_total_tokens": 526.0,
+    "average_calls": 1.0,
+    "average_latency_seconds": 3.2162502261344343
+  },
+  "solver_critic_refiner": {
+    "correct": 1,
+    "accuracy": 1.0,
+    "parse_failures": 0,
+    "average_total_tokens": 1974.0,
+    "average_extra_collaboration_tokens": 1448.0,
+    "average_calls": 3.0,
+    "average_extra_calls": 2.0,
+    "average_latency_seconds": 8.512477218173444
+  },
+  "transitions": {
+    "corrected": 0,
+    "degraded": 0,
+    "unchanged": 1
+  },
+  "parse_failures": {
+    "solver": 0,
+    "refiner": 0,
+    "either": 0
+  }
+}

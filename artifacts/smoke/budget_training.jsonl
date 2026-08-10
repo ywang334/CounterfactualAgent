@@ -1,0 +1,4 @@
+{"id": "toy-zero", "query": "Return the base result. [toy=zero]", "max_budget": {"extra_tokens": 1024, "extra_calls": 2}, "budget_label": "ZERO", "unsolved": false, "mock_only": true}
+{"id": "toy-low", "query": "Apply a small correction. [toy=low]", "max_budget": {"extra_tokens": 1024, "extra_calls": 2}, "budget_label": "LOW", "unsolved": false, "mock_only": true}
+{"id": "toy-medium", "query": "Solve a two-step task. [toy=medium]", "max_budget": {"extra_tokens": 1024, "extra_calls": 2}, "budget_label": "MEDIUM", "unsolved": false, "mock_only": true}
+{"id": "toy-high", "query": "Solve a difficult task. [toy=high]", "max_budget": {"extra_tokens": 1024, "extra_calls": 2}, "budget_label": "HIGH", "unsolved": false, "mock_only": true}

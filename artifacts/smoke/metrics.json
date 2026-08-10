@@ -1,0 +1,60 @@
+{
+  "mock_only": true,
+  "collect_budget": {
+    "queries": 5,
+    "solved": 4,
+    "unsolved": 1,
+    "training_examples": 4,
+    "solver_calls_expected": 5
+  },
+  "collect_counterfactual": {
+    "queries": 5,
+    "reference_states": 10,
+    "counterfactual_branches": 50,
+    "training_examples": 35
+  },
+  "train_budget": {
+    "examples": 4,
+    "epochs": 25,
+    "final_loss": 1.081546425819397,
+    "training_accuracy": 1.0,
+    "encoder": "hashing-64",
+    "mock_only": true,
+    "checkpoint": "artifacts/smoke/budget_allocator.pt"
+  },
+  "train_action": {
+    "examples": 35,
+    "epochs": 30,
+    "final_loss": 0.41667184233665466,
+    "classification_loss": 0.41334450244903564,
+    "auxiliary_loss": 0.016636738553643227,
+    "training_accuracy": 0.9142857193946838,
+    "encoder": "hashing-64",
+    "mock_only": true,
+    "checkpoint": "artifacts/smoke/action_controller.pt"
+  },
+  "smoke": {
+    "status": "passed",
+    "device": "cpu",
+    "network_used": false,
+    "mock_only": true,
+    "checks": {
+      "budget_not_exceeded": true,
+      "skip_stop_zero_calls": true,
+      "counterfactual_branch_isolation": true,
+      "label_selection": true,
+      "controller_forward_backward_checkpoint": true,
+      "checkpoint_load_and_inference": true,
+      "langgraph_execution": true
+    },
+    "artifacts": [
+      "budget_rollouts.jsonl",
+      "budget_training.jsonl",
+      "counterfactual_rollouts.jsonl",
+      "action_training.jsonl",
+      "budget_allocator.pt",
+      "action_controller.pt",
+      "metrics.json"
+    ]
+  }
+}

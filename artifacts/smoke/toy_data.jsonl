@@ -1,0 +1,5 @@
+{"id": "toy-zero", "query": "Return the base result. [toy=zero]", "difficulty": 0}
+{"id": "toy-low", "query": "Apply a small correction. [toy=low]", "difficulty": 1}
+{"id": "toy-medium", "query": "Solve a two-step task. [toy=medium]", "difficulty": 2}
+{"id": "toy-high", "query": "Solve a difficult task. [toy=high]", "difficulty": 3}
+{"id": "toy-unsolved", "query": "This toy task exceeds all tiers.", "difficulty": 4}
