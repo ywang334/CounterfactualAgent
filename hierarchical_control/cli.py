@@ -37,6 +37,7 @@ from .precritic_controller_v1_audit import run_precritic_controller_v1_audit
 from .precritic_controller_v2 import train_precritic_controller_v2
 from .precritic_controller_v3 import run_precritic_controller_v3_smoke
 from .precritic_controller_v3_audit import run_precritic_controller_v3_generalization_audit
+from .precritic_controller_v3_capacity_ablation import run_capacity_ablation
 from .precritic_controller_v3_training import train_precritic_controller_v3
 from .precritic_representation_audit import (
     run_precritic_representation_audit,
@@ -362,6 +363,20 @@ def command_audit_precritic_controller_v3_generalization(
         validation_path=args.validation,
         final_test_manifest_path=args.final_test_manifest,
         output_dir=args.output_dir,
+    )
+
+
+def command_ablate_precritic_controller_v3_capacity(
+    args: argparse.Namespace,
+) -> dict[str, Any]:
+    return run_capacity_ablation(
+        output_dir=args.output_dir,
+        controller_v3_dir=args.controller_v3_dir,
+        training_path=args.training,
+        training_manifest_path=args.training_manifest,
+        validation_path=args.validation,
+        final_test_manifest_path=args.final_test_manifest,
+        resume=args.resume,
     )
 
 
@@ -975,6 +990,42 @@ def build_parser() -> argparse.ArgumentParser:
     )
     controller_v3_audit.set_defaults(
         handler=command_audit_precritic_controller_v3_generalization
+    )
+
+    controller_v3_capacity = subparsers.add_parser(
+        "ablate-precritic-controller-v3-capacity"
+    )
+    controller_v3_capacity.add_argument(
+        "--output-dir",
+        default="artifacts/precritic_controller_v3_capacity_ablation",
+    )
+    controller_v3_capacity.add_argument(
+        "--controller-v3-dir",
+        default="artifacts/precritic_controller_v3",
+    )
+    controller_v3_capacity.add_argument(
+        "--training",
+        default="artifacts/precritic_training_1000/training_examples.jsonl",
+    )
+    controller_v3_capacity.add_argument(
+        "--training-manifest",
+        default="artifacts/precritic_training_1000/manifest.json",
+    )
+    controller_v3_capacity.add_argument(
+        "--validation",
+        default="artifacts/logiqa_policy_validation_100/predictions.jsonl",
+    )
+    controller_v3_capacity.add_argument(
+        "--final-test-manifest",
+        default="artifacts/logiqa_final_test_500/split_manifest.json",
+    )
+    controller_v3_capacity.add_argument(
+        "--resume",
+        action="store_true",
+        help="Resume only from matching atomic fold/variant checkpoints.",
+    )
+    controller_v3_capacity.set_defaults(
+        handler=command_ablate_precritic_controller_v3_capacity
     )
 
     validation = subparsers.add_parser("validate-logiqa-policies")
