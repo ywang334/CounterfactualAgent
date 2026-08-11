@@ -36,6 +36,7 @@ from .precritic_controller_v1 import train_precritic_controller_v1
 from .precritic_controller_v1_audit import run_precritic_controller_v1_audit
 from .precritic_controller_v2 import train_precritic_controller_v2
 from .precritic_controller_v3 import run_precritic_controller_v3_smoke
+from .precritic_controller_v3_training import train_precritic_controller_v3
 from .precritic_representation_audit import (
     run_precritic_representation_audit,
 )
@@ -333,6 +334,20 @@ def command_smoke_precritic_controller_v3(
         final_test_manifest_path=args.final_test_manifest,
         output_dir=args.output_dir,
         sample_count=args.sample_count,
+    )
+
+
+def command_train_precritic_controller_v3(
+    args: argparse.Namespace,
+) -> dict[str, Any]:
+    return train_precritic_controller_v3(
+        training_path=args.training,
+        training_manifest_path=args.training_manifest,
+        validation_path=args.validation,
+        final_test_manifest_path=args.final_test_manifest,
+        controller_v1_dir=args.controller_v1_dir,
+        controller_v2_dir=args.controller_v2_dir,
+        output_dir=args.output_dir,
     )
 
 
@@ -880,6 +895,41 @@ def build_parser() -> argparse.ArgumentParser:
     )
     controller_v3_smoke.set_defaults(
         handler=command_smoke_precritic_controller_v3
+    )
+
+    controller_v3_train = subparsers.add_parser(
+        "train-precritic-controller-v3"
+    )
+    controller_v3_train.add_argument(
+        "--training",
+        default="artifacts/precritic_training_1000/training_examples.jsonl",
+    )
+    controller_v3_train.add_argument(
+        "--training-manifest",
+        default="artifacts/precritic_training_1000/manifest.json",
+    )
+    controller_v3_train.add_argument(
+        "--validation",
+        default="artifacts/logiqa_policy_validation_100/predictions.jsonl",
+    )
+    controller_v3_train.add_argument(
+        "--final-test-manifest",
+        default="artifacts/logiqa_final_test_500/split_manifest.json",
+    )
+    controller_v3_train.add_argument(
+        "--controller-v1-dir",
+        default="artifacts/precritic_controller_v1",
+    )
+    controller_v3_train.add_argument(
+        "--controller-v2-dir",
+        default="artifacts/precritic_controller_v2_factorized",
+    )
+    controller_v3_train.add_argument(
+        "--output-dir",
+        default="artifacts/precritic_controller_v3",
+    )
+    controller_v3_train.set_defaults(
+        handler=command_train_precritic_controller_v3
     )
 
     validation = subparsers.add_parser("validate-logiqa-policies")

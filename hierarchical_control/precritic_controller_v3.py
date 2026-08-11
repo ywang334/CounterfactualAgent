@@ -40,6 +40,7 @@ NUM_HEADS = 4
 FEEDFORWARD_DIM = 512
 NUM_LAYERS = 2
 DROPOUT = 0.1
+MAX_CONTROLLER_SEQUENCE_LENGTH = 32
 
 FIELD_TYPES = (
     "cls",
@@ -239,6 +240,7 @@ class SolverChunks:
 class PreCriticV3Batch:
     text_embeddings: torch.Tensor
     type_ids: torch.Tensor
+    position_ids: torch.Tensor
     padding_mask: torch.Tensor
     structured_state: torch.Tensor
     state_positions: torch.Tensor
@@ -279,19 +281,27 @@ def _validate_model_input(model_input: Mapping[str, Any]) -> None:
     if not isinstance(solver["raw_output"], str):
         raise ValueError("Solver raw output must be a string")
     parse = solver.get("parse_status")
-    expected_parse = {
+    required_parse = {
         "strict_answer",
-        "strict_parse_failure",
         "tolerant_answer",
-        "tolerant_parse_failure",
         "tolerant_match_count",
         "tolerant_conflict",
     }
-    if not isinstance(parse, dict) or set(parse) != expected_parse:
+    optional_failure_flags = {
+        "strict_parse_failure",
+        "tolerant_parse_failure",
+    }
+    valid_parse_schemas = (
+        required_parse,
+        required_parse | optional_failure_flags,
+    )
+    if not isinstance(parse, dict) or set(parse) not in valid_parse_schemas:
         raise ValueError("Controller v3 parse status violates the whitelist")
-    if not isinstance(parse["strict_parse_failure"], bool) or not isinstance(
-        parse["tolerant_parse_failure"], bool
-    ) or not isinstance(parse["tolerant_conflict"], bool):
+    if not isinstance(parse["tolerant_conflict"], bool) or any(
+        not isinstance(parse[name], bool)
+        for name in optional_failure_flags
+        if name in parse
+    ):
         raise ValueError("Controller v3 parse booleans are invalid")
     if isinstance(parse["tolerant_match_count"], bool) or not isinstance(
         parse["tolerant_match_count"], int
@@ -301,22 +311,26 @@ def _validate_model_input(model_input: Mapping[str, Any]) -> None:
         if parse[name] is not None and parse[name] not in ANSWER_LETTERS:
             raise ValueError(f"Controller v3 {name} is invalid")
     usage = solver.get("usage")
-    expected_usage = {
+    required_usage = {
         "prompt_tokens",
         "completion_tokens",
         "total_tokens",
         "calls",
-        "latency_seconds",
     }
-    if not isinstance(usage, dict) or set(usage) != expected_usage:
+    valid_usage_schemas = (required_usage, required_usage | {"latency_seconds"})
+    if not isinstance(usage, dict) or set(usage) not in valid_usage_schemas:
         raise ValueError("Controller v3 Solver usage violates the whitelist")
     for name in ("prompt_tokens", "completion_tokens", "total_tokens", "calls"):
         if isinstance(usage[name], bool) or not isinstance(usage[name], int) or usage[name] < 0:
             raise ValueError(f"Controller v3 Solver usage {name} is invalid")
     if usage["prompt_tokens"] + usage["completion_tokens"] != usage["total_tokens"]:
         raise ValueError("Controller v3 Solver token identity failed")
-    latency = usage["latency_seconds"]
-    if isinstance(latency, bool) or not isinstance(latency, (int, float)) or latency < 0:
+    latency = usage.get("latency_seconds")
+    if latency is not None and (
+        isinstance(latency, bool)
+        or not isinstance(latency, (int, float))
+        or latency < 0
+    ):
         raise ValueError("Controller v3 Solver latency is invalid")
 
 
@@ -379,6 +393,13 @@ def chunk_solver_output(text: str, encoder: FieldTextEncoder) -> SolverChunks:
     lengths = tuple(len(chunk) for chunk in id_chunks)
     if sum(lengths) != len(source_ids):
         raise AssertionError("Solver token chunks do not cover the source")
+    for index, (original_ids, decoded) in enumerate(zip(id_chunks, texts)):
+        retokenized_ids = encoder.content_token_ids(decoded)
+        if list(original_ids) != retokenized_ids:
+            raise ValueError(
+                "Solver chunk tokenizer round-trip mismatch at chunk "
+                f"{index}; approximate repair is forbidden"
+            )
     sequence_lengths = [encoder.sequence_token_length(chunk) for chunk in texts]
     if any(length > encoder.max_seq_length for length in sequence_lengths):
         raise ValueError(
@@ -445,18 +466,26 @@ def build_v3_feature_batch(
             }
         )
 
+    sequence_lengths = [1 + len(record["texts"]) + 1 for record in records]
+    batch_size = len(records)
+    max_tokens = max(sequence_lengths)
+    if max_tokens > MAX_CONTROLLER_SEQUENCE_LENGTH:
+        raise ValueError(
+            "Controller v3 sequence exceeds learned position capacity "
+            f"{MAX_CONTROLLER_SEQUENCE_LENGTH}"
+        )
     encoded = encoder.encode(flat_texts)
     if encoded.shape != (len(flat_texts), EMBEDDING_DIM):
         raise ValueError(
             "Field encoder returned an unexpected embedding batch shape"
         )
-    sequence_lengths = [1 + len(record["texts"]) + 1 for record in records]
-    batch_size = len(records)
-    max_tokens = max(sequence_lengths)
     embeddings = torch.zeros(
         (batch_size, max_tokens, EMBEDDING_DIM), dtype=torch.float32
     )
     type_ids = torch.zeros((batch_size, max_tokens), dtype=torch.long)
+    position_ids = torch.arange(max_tokens, dtype=torch.long).expand(
+        batch_size, -1
+    ).clone()
     padding_mask = torch.ones((batch_size, max_tokens), dtype=torch.bool)
     states = torch.stack([record["state"] for record in records])
     state_positions = torch.empty(batch_size, dtype=torch.long)
@@ -480,6 +509,7 @@ def build_v3_feature_batch(
     return PreCriticV3Batch(
         text_embeddings=embeddings,
         type_ids=type_ids,
+        position_ids=position_ids,
         padding_mask=padding_mask,
         structured_state=states,
         state_positions=state_positions,
@@ -503,6 +533,9 @@ class PreCriticControllerV3(nn.Module):
         super().__init__()
         self.input_projection = nn.Linear(EMBEDDING_DIM, MODEL_DIM)
         self.field_type_embedding = nn.Embedding(len(FIELD_TYPES), MODEL_DIM)
+        self.position_embedding = nn.Embedding(
+            MAX_CONTROLLER_SEQUENCE_LENGTH, MODEL_DIM
+        )
         self.cls_token = nn.Parameter(torch.zeros(1, 1, MODEL_DIM))
         self.state_projection = nn.Linear(len(STRUCTURED_STATE_FEATURES), MODEL_DIM)
         layer = nn.TransformerEncoderLayer(
@@ -532,8 +565,20 @@ class PreCriticControllerV3(nn.Module):
             raise ValueError("Controller v3 text embeddings have invalid shape")
         batch_size, sequence_length, _ = embeddings.shape
         expected_matrix = (batch_size, sequence_length)
-        if batch.type_ids.shape != expected_matrix or batch.padding_mask.shape != expected_matrix:
-            raise ValueError("Controller v3 type IDs or padding mask do not align")
+        if (
+            batch.type_ids.shape != expected_matrix
+            or batch.position_ids.shape != expected_matrix
+            or batch.padding_mask.shape != expected_matrix
+        ):
+            raise ValueError(
+                "Controller v3 type IDs, position IDs, or padding mask do not align"
+            )
+        if sequence_length > MAX_CONTROLLER_SEQUENCE_LENGTH:
+            raise ValueError("Controller v3 position capacity exceeded")
+        if torch.any(batch.position_ids < 0) or torch.any(
+            batch.position_ids >= MAX_CONTROLLER_SEQUENCE_LENGTH
+        ):
+            raise ValueError("Controller v3 position IDs are out of range")
         if batch.structured_state.shape != (
             batch_size,
             len(STRUCTURED_STATE_FEATURES),
@@ -552,7 +597,11 @@ class PreCriticControllerV3(nn.Module):
         hidden[
             torch.arange(batch_size), batch.state_positions
         ] = self.state_projection(batch.structured_state)
-        hidden = hidden + self.field_type_embedding(batch.type_ids)
+        hidden = (
+            hidden
+            + self.field_type_embedding(batch.type_ids)
+            + self.position_embedding(batch.position_ids)
+        )
         encoded = self.transformer(
             hidden,
             src_key_padding_mask=batch.padding_mask,
@@ -828,6 +877,8 @@ def run_precritic_controller_v3_smoke(
         "d_model": MODEL_DIM,
         "input_projection": f"{EMBEDDING_DIM}->{MODEL_DIM}",
         "field_type_embeddings": len(FIELD_TYPES),
+        "learned_absolute_position_embeddings": True,
+        "max_controller_sequence_length": MAX_CONTROLLER_SEQUENCE_LENGTH,
         "field_types": list(FIELD_TYPES),
         "base_field_order": [
             "cls",
@@ -896,6 +947,7 @@ def run_precritic_controller_v3_smoke(
             "samples": len(selected),
             "text_embedding_shape": list(batch.text_embeddings.shape),
             "type_id_shape": list(batch.type_ids.shape),
+            "position_id_shape": list(batch.position_ids.shape),
             "padding_mask_shape": list(batch.padding_mask.shape),
             "structured_state_shape": list(batch.structured_state.shape),
             "state_positions_shape": list(batch.state_positions.shape),

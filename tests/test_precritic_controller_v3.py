@@ -122,7 +122,8 @@ def test_field_order_solver_chunks_padding_and_batch_shapes():
     )
     assert batch.solver_chunk_counts == (1, 3)
     assert batch.text_embeddings.shape == (2, 11, EMBEDDING_DIM)
-    assert batch.type_ids.shape == batch.padding_mask.shape == (2, 11)
+    assert batch.type_ids.shape == batch.position_ids.shape == batch.padding_mask.shape == (2, 11)
+    assert batch.position_ids[0].tolist() == list(range(11))
     assert batch.structured_state.shape == (2, len(STRUCTURED_STATE_FEATURES))
     assert batch.state_positions.tolist() == [8, 10]
     assert batch.padding_mask[0].tolist() == [False] * 9 + [True, True]
@@ -152,6 +153,24 @@ def test_solver_chunking_covers_tokenizer_ids_without_truncation():
     )
 
 
+class BrokenRoundTripEncoder(TinyFieldEncoder):
+    def decode_content_ids(self, token_ids):
+        return super().decode_content_ids(list(reversed(token_ids)))
+
+
+def test_solver_chunk_round_trip_mismatch_fails_without_repair():
+    encoder = BrokenRoundTripEncoder(max_seq_length=6)
+    with pytest.raises(ValueError, match="round-trip mismatch"):
+        chunk_solver_output("one two three", encoder)
+
+
+def test_position_capacity_fails_before_embedding_forward():
+    encoder = TinyFieldEncoder(max_seq_length=4)  # two Solver content tokens/chunk
+    with pytest.raises(ValueError, match="position capacity"):
+        build_v3_feature_batch([_model_input(50)], encoder)
+    assert encoder.embedding_forward_calls == 0
+
+
 def test_structured_state_uses_eight_frozen_features_parse_and_answer():
     vector, parse_status, answer = structured_state_vector(_model_input())
     assert vector.shape == (18,)
@@ -163,6 +182,18 @@ def test_structured_state_uses_eight_frozen_features_parse_and_answer():
     leaked["gold"] = "B"
     with pytest.raises(ValueError, match="whitelist"):
         structured_state_vector(leaked)
+
+
+def test_compact_frozen_validation_parse_schema_is_whitelisted():
+    model_input = _model_input()
+    del model_input["solver"]["parse_status"]["strict_parse_failure"]
+    del model_input["solver"]["parse_status"]["tolerant_parse_failure"]
+    vector, status, answer = structured_state_vector(model_input)
+    assert vector.shape == (18,)
+    assert status == "both_parsed_agree" and answer == "B"
+    model_input["solver"]["parse_status"]["unexpected"] = True
+    with pytest.raises(ValueError, match="whitelist"):
+        structured_state_vector(model_input)
 
 
 def test_forward_shapes_probabilities_padding_mask_and_parameter_count():
@@ -210,10 +241,29 @@ def test_forward_shapes_probabilities_padding_mask_and_parameter_count():
     )
 
     counts = controller_parameter_counts(model)
-    assert counts == {"total": 450695, "trainable": 450695, "frozen": 0}
+    assert counts == {"total": 454791, "trainable": 454791, "frozen": 0}
     assert EXPECTED_TRAINABLE_PARAMETER_MIN <= counts["trainable"]
     assert counts["trainable"] <= EXPECTED_TRAINABLE_PARAMETER_MAX
     assert not hasattr(model, "cost_head")
+
+
+def test_learned_positions_make_solver_chunk_order_observable():
+    encoder = TinyFieldEncoder(max_seq_length=5)
+    batch = build_v3_feature_batch([_model_input(7)], encoder)
+    assert batch.solver_chunk_counts == (3,)
+    torch.manual_seed(19)
+    model = PreCriticControllerV3().eval()
+    with torch.inference_mode():
+        original = model(batch)["transition_logits"]
+    swapped_embeddings = batch.text_embeddings.clone()
+    # Solver chunks occupy positions 7, 8, and 9 after CLS + six fixed fields.
+    swapped_embeddings[:, [7, 8]] = swapped_embeddings[:, [8, 7]]
+    swapped = type(batch)(
+        **{**batch.__dict__, "text_embeddings": swapped_embeddings}
+    )
+    with torch.inference_mode():
+        changed = model(swapped)["transition_logits"]
+    assert not torch.allclose(original, changed, rtol=0.0, atol=1e-7)
 
 
 class _FakeTokenizer:
