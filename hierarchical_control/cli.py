@@ -36,6 +36,7 @@ from .precritic_controller_v1 import train_precritic_controller_v1
 from .precritic_controller_v1_audit import run_precritic_controller_v1_audit
 from .precritic_controller_v2 import train_precritic_controller_v2
 from .precritic_controller_v3 import run_precritic_controller_v3_smoke
+from .precritic_controller_v3_audit import run_precritic_controller_v3_generalization_audit
 from .precritic_controller_v3_training import train_precritic_controller_v3
 from .precritic_representation_audit import (
     run_precritic_representation_audit,
@@ -347,6 +348,19 @@ def command_train_precritic_controller_v3(
         final_test_manifest_path=args.final_test_manifest,
         controller_v1_dir=args.controller_v1_dir,
         controller_v2_dir=args.controller_v2_dir,
+        output_dir=args.output_dir,
+    )
+
+
+def command_audit_precritic_controller_v3_generalization(
+    args: argparse.Namespace,
+) -> dict[str, Any]:
+    return run_precritic_controller_v3_generalization_audit(
+        controller_dir=args.controller_dir,
+        training_path=args.training,
+        training_manifest_path=args.training_manifest,
+        validation_path=args.validation,
+        final_test_manifest_path=args.final_test_manifest,
         output_dir=args.output_dir,
     )
 
@@ -930,6 +944,37 @@ def build_parser() -> argparse.ArgumentParser:
     )
     controller_v3_train.set_defaults(
         handler=command_train_precritic_controller_v3
+    )
+
+    controller_v3_audit = subparsers.add_parser(
+        "audit-precritic-controller-v3-generalization"
+    )
+    controller_v3_audit.add_argument(
+        "--controller-dir",
+        default="artifacts/precritic_controller_v3",
+    )
+    controller_v3_audit.add_argument(
+        "--training",
+        default="artifacts/precritic_training_1000/training_examples.jsonl",
+    )
+    controller_v3_audit.add_argument(
+        "--training-manifest",
+        default="artifacts/precritic_training_1000/manifest.json",
+    )
+    controller_v3_audit.add_argument(
+        "--validation",
+        default="artifacts/logiqa_policy_validation_100/predictions.jsonl",
+    )
+    controller_v3_audit.add_argument(
+        "--final-test-manifest",
+        default="artifacts/logiqa_final_test_500/split_manifest.json",
+    )
+    controller_v3_audit.add_argument(
+        "--output-dir",
+        default="artifacts/precritic_controller_v3/generalization_audit",
+    )
+    controller_v3_audit.set_defaults(
+        handler=command_audit_precritic_controller_v3_generalization
     )
 
     validation = subparsers.add_parser("validate-logiqa-policies")
